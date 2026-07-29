@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "development"
+  ],
+  "connector": {
+    "name": "local",
+    "options": {
+      "ignoredUrls": [
+        "**/public/shared.css"
+      ]
+    }
+  },
+  "ignoredUrls": [
+    {
+      "domain": "shared\\.css$",
+      "hints": [
+        "*"
+      ]
+    }
+  ]
+}
