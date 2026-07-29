@@ -1,0 +1,48 @@
+{
+  "name": "drive-box",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "server": "node --watch server.js",
+    "db:setup": "node --env-file=.env.development db/populatedb.js",
+    "db:reset": "node --env-file=.env.development db/dropdb.js && npm run db:setup",
+    "db:setup:prod": "node --env-file=.env.production db/populatedb.js",
+    "css:watch": "npx tailwindcss -i ./public/main.css -o ./public/shared.css --watch",
+    "css:build": "npx tailwindcss -i ./public/main.css -o ./public/shared.css --minify",
+    "build": "npm run css:watch",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TonyFred-code/drive-box.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/TonyFred-code/drive-box/issues"
+  },
+  "homepage": "https://github.com/TonyFred-code/drive-box#readme",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@tailwindcss/cli": "^4.3.3",
+    "bcrypt": "^6.0.0",
+    "connect-flash": "^0.1.1",
+    "connect-pg-simple": "^10.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.2",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "pg": "^8.22.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.5",
+    "prettier-plugin-ejs": "^1.0.3"
+  }
+}
