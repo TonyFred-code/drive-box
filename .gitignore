@@ -143,3 +143,5 @@ vite.config.ts.timestamp-*
 
 # CSS BUILD
 public/shared.css
+
+/generated/prisma
