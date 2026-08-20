@@ -10,6 +10,7 @@ import passport from "passport";
 import { registerRouter } from "./routes/register.route.js";
 import { dashboardRouter } from "./routes/dashboard.route.js";
 import { logoutRouter } from "./routes/logout.route.js";
+import { loginRouter } from "./routes/login.route.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -48,6 +49,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // ROUTES
+app.use("/login", loginRouter);
 app.use("/logout", logoutRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/register", registerRouter);
