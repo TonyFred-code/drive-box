@@ -8,6 +8,7 @@ import { prisma } from "./db/prisma.js";
 import { indexRouter } from "./routes/index.route.js";
 import passport from "passport";
 import { registerRouter } from "./routes/register.route.js";
+import { dashboardRouter } from "./routes/dashboard.route.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -46,6 +47,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // ROUTES
+app.use("/dashboard", dashboardRouter);
 app.use("/register", registerRouter);
 app.use("/", indexRouter);
 
