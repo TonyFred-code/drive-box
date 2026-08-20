@@ -20,4 +20,18 @@ async function getUserById(id) {
   return user;
 }
 
-export { getUserByEmail, getUserById };
+async function checkEmailExists(email) {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return !!user;
+  // Return True - User with email exists, False otherwise
+}
+
+export { getUserByEmail, getUserById, checkEmailExists };
