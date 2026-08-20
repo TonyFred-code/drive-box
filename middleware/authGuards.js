@@ -10,4 +10,19 @@ function redirectIfAuthenticated(req, res, next) {
   return res.redirect("/dashboard");
 }
 
-export { redirectIfAuthenticated };
+function requireAuth(req, res, next) {
+  if (!req.user) {
+    if (req.accepts("json")) {
+      return res.status(401).json({
+        msg: "User is not authenticated",
+      });
+    }
+
+    req.session.redirectTo = req.originalUrl;
+    return res.redirect("/login");
+  }
+
+  next();
+}
+
+export { redirectIfAuthenticated, requireAuth };
