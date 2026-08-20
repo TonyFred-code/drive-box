@@ -34,4 +34,16 @@ async function checkEmailExists(email) {
   // Return True - User with email exists, False otherwise
 }
 
-export { getUserByEmail, getUserById, checkEmailExists };
+async function createNewUser(email, username, hashedPassword) {
+  const user = await prisma.user.create({
+    data: {
+      email,
+      username,
+      password: hashedPassword,
+    },
+  });
+
+  return user;
+}
+
+export { getUserByEmail, getUserById, checkEmailExists, createNewUser };
