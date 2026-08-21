@@ -1,0 +1,12 @@
+#root.login__page-wrapper {
+  form {
+    &[data-validity="invalid"] span[data-field-msg="form"] {
+      @apply inline;
+    }
+
+    &[data-validity="default"] span[data-field-msg="form"],
+    &[data-validity="valid"] span[data-field-msg="form"] {
+      @apply hidden;
+    }
+  }
+}
