@@ -1,23 +1,33 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { getUserByEmail, getUserById } from "../db/user.js";
+import { getUserByEmail, getUserById, getUserByUsername } from "../db/user.js";
 import { validPassword } from "../lib/passwordUtils.js";
 
 passport.use(
   new LocalStrategy(
-    { usernameField: "email" },
-    async (email, password, done) => {
+    { usernameField: "userIdentifier" },
+    async (userIdentifier, password, done) => {
       try {
-        const user = await getUserByEmail(email);
+        let identifierType = "";
+        let user = null;
+        if (userIdentifier.includes("@")) {
+          identifierType = "email";
+          user = await getUserByEmail(userIdentifier);
+        } else {
+          identifierType = "username";
+          user = await getUserByUsername(userIdentifier);
+        }
+
+        const errMsg = `Invalid ${identifierType} or password`;
 
         if (!user) {
-          return done(null, false, { message: "Invalid email or password" });
+          return done(null, false, { message: errMsg });
         }
 
         const isValid = await validPassword(password, user.password);
 
         if (!isValid) {
-          return done(null, false, { message: "Invalid email or password" });
+          return done(null, false, { message: errMsg });
         }
 
         return done(null, user);
