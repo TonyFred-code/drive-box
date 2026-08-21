@@ -1,17 +1,26 @@
-import { checkEmailExists, createNewUser } from "../db/user.js";
+import {
+  checkEmailExists,
+  checkUsernameExists,
+  createNewUser,
+} from "../db/user.js";
 import { Prisma } from "../generated/prisma/index.js";
 import { hashPassword } from "../lib/passwordUtils.js";
 import { handleUniqueConstraintError } from "../lib/prismaUtils.js";
 import { REGISTER_ERROR_CODES } from "../public/constants/errorCodes.js";
 
-async function checkEmailUnique(req, res, next) {
+async function checkUserIdentifierUnique(req, res, next) {
+  const userIdentifier = req.query.userIdentifier;
+  let userIdentifierTaken = true;
+
   try {
-    const emailTaken = await checkEmailExists(req.query.email);
+    if (userIdentifier.includes("@")) {
+      userIdentifierTaken = await checkEmailExists(userIdentifier);
+    } else {
+      userIdentifierTaken = await checkUsernameExists(userIdentifier);
+    }
 
-    return res.json({ emailTaken });
+    return res.json({ userIdentifierTaken });
   } catch (error) {
-    //TODO: Uniquely identify error?
-
     next(error);
   }
 }
@@ -57,4 +66,4 @@ async function registerPost(req, res, next) {
   }
 }
 
-export { checkEmailUnique, registerPost };
+export { checkUserIdentifierUnique, registerPost };

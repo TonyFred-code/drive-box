@@ -1,13 +1,13 @@
 import { Router } from "express";
 import {
-  checkEmailUnique,
+  checkUserIdentifierUnique,
   registerPost,
 } from "../controller/register.controller.js";
 import { redirectIfAuthenticated } from "../middleware/authGuards.js";
 
 const registerRouter = Router();
 
-registerRouter.get("/email-unique", checkEmailUnique);
+registerRouter.get("/user-identifier-unique", checkUserIdentifierUnique);
 registerRouter.post("/", redirectIfAuthenticated, registerPost);
 
 export { registerRouter };

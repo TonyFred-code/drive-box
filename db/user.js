@@ -1,5 +1,18 @@
 import { prisma } from "./prisma.js";
 
+async function checkUsernameExists(username) {
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return !!user;
+}
+
 async function getUserByEmail(email) {
   const user = await prisma.user.findUnique({
     where: {
@@ -61,5 +74,6 @@ export {
   getUserById,
   checkEmailExists,
   createNewUser,
+  checkUsernameExists,
   getUserByUsername,
 };
