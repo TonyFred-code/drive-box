@@ -66,4 +66,8 @@ async function registerPost(req, res, next) {
   }
 }
 
-export { checkUserIdentifierUnique, registerPost };
+function registerPageGet(req, res) {
+  res.render("register");
+}
+
+export { checkUserIdentifierUnique, registerPageGet, registerPost };
