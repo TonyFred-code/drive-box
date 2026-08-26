@@ -31,14 +31,14 @@ function loginAuth(req, res, next) {
 
       delete req.session.redirectTo;
 
-      if (req.accepts("json")) {
-        return res.status(200).json({
-          success: true,
-          redirectUrl: targetUrl,
-        });
+      if (req.accepts("html")) {
+        return res.redirect(targetUrl);
       }
 
-      return res.redirect(targetUrl);
+      return res.status(200).json({
+        success: true,
+        redirectUrl: targetUrl,
+      });
     });
   })(req, res, next);
 }

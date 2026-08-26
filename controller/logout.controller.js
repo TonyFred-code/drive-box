@@ -11,12 +11,13 @@ function logoutUser(req, res, next) {
 
       res.clearCookie("connect.sid");
 
-      if (req.accepts("json")) {
-        return res.json({
-          msg: "User is logged out",
-        });
+      if (req.accepts("html")) {
+        return res.redirect("/");
       }
-      res.redirect("/");
+
+      return res.json({
+        msg: "User is logged out",
+      });
     });
   });
 }
