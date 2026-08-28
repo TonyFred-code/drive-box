@@ -1,3 +1,4 @@
 @import "tailwindcss";
 
 @import "./pages/login/style.css";
+@import "./pages/register/style.css";

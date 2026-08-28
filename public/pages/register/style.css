@@ -1,0 +1,31 @@
+#root.register__page-wrapper {
+  &[data-validity="invalid"] {
+    [data-field-msg="form"] {
+      @apply inline-flex;
+    }
+  }
+
+  [data-active-step="one"] {
+    [data-step-indicator="one"] {
+      @apply bg-blue-400 text-white;
+    }
+
+    [data-step="two"] {
+      @apply hidden;
+    }
+  }
+
+  [data-active-step="two"] {
+    [data-step-indicator="two"] {
+      @apply bg-blue-400 text-white;
+    }
+
+    [data-step="one"] {
+      @apply hidden;
+    }
+  }
+
+  [data-field-msg="form"] {
+    @apply hidden;
+  }
+}
