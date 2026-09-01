@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <link rel="stylesheet" href="/shared.css" />
+    <script type="module" src="/pages/register/main.js" defer></script>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="register__page-wrapper flex justify-center min-h-screen"
+    >
+      <div class="max-w-lg w-full flex-col my-8 flex gap-8 mx-3">
+        <header
+          class="flex gap-8 border rounded-md items-center border-gray-400"
+        >
+          <div class="flex items-center justify-center size-14">
+            <img
+              class="w-full h-full"
+              src="/images/drive-box-logo-icon.svg"
+              alt=""
+            />
+          </div>
+          <h1 class="flex-1 text-2xl font-bold">Drive Box</h1>
+        </header>
+        <main class="flex flex-col gap-4 flex-1">
+          <h2 class="text-xl font-medium text-center">Create account</h2>
+
+          <form
+            action="/register"
+            novalidate
+            class="flex flex-col gap-4"
+            data-active-step="one"
+            data-validity="default"
+          >
+            <div
+              class="*:font-bold *:text-lg *:border *:border-gray-600 *:rounded-full *:flex *:items-center *:justify-center flex gap-8 justify-around *:p-2 *:size-12 *:text-center my-4"
+            >
+              <span data-step-indicator="one">1</span>
+              <span data-step-indicator="two">2</span>
+            </div>
+            <div>
+              <span data-field-msg="form" class="hidden"></span>
+              <div data-step="one" class="my-3 flex flex-col gap-3">
+                <h3 class="text-center">Personal Details</h3>
+                <div>
+                  <span
+                    data-field-type="error"
+                    data-field-msg="email"
+                    class="hidden text-sm data-[field-type='error']:text-red-600"
+                  ></span>
+                  <div class="flex flex-col gap-2">
+                    <label for="email">Email Address:</label>
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      placeholder="example@mail.com"
+                      data-field-name="email"
+                      data-validity="default"
+                      class="py-2 px-3 rounded-md border-gray-200 border focus:border-blue-400 outline-none data-[validity='valid']:border-green-400 data-[validity='invalid']:border-red-400 data-[validity='invalid']:placeholder:text-red-300"
+                    />
+                  </div>
+                </div>
+                <div class="flex-col flex gap-2">
+                  <span
+                    class="hidden text-sm data-[field-type='error']:text-red-600"
+                    data-field-msg="username"
+                    data-field-type="error"
+                  ></span>
+                  <div class="flex flex-col gap-2">
+                    <label for="username">Username</label>
+                    <input
+                      type="text"
+                      name="username"
+                      id="username"
+                      data-field-name="username"
+                      placeholder="john_doe_1"
+                      class="py-2 px-3 rounded-md border-gray-200 border focus:border-blue-400 outline-none data-[validity='valid']:border-green-400 data-[validity='invalid']:border-red-400 data-[validity='invalid']:placeholder:text-red-300"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  id="next-form-step-btn"
+                  class="w-fit self-end my-3 cursor-pointer rounded-lg py-2 px-6 text-center text-lg font-semibold border border-gray-400 capitalize"
+                >
+                  next
+                </button>
+              </div>
+              <div data-step="two" class="my-3 flex flex-col gap-3">
+                <h3 class="text-center text-xl">Security Parameters</h3>
+                <div class="flex flex-col gap-4">
+                  <div class="flex flex-col gap-2">
+                    <span
+                      data-field-msg="password"
+                      class="hidden text-sm text-red-600"
+                    ></span>
+                    <div class="flex flex-col gap-2">
+                      <label for="password">Password</label>
+                      <input
+                        type="password"
+                        data-field-name="password"
+                        name="password"
+                        id="password"
+                        autocomplete="new-password"
+                        data-validity="default"
+                        class="py-2 px-3 rounded-md border-gray-200 border focus:border-blue-400 outline-none data-[validity='valid']:border-green-400 data-[validity='invalid']:border-red-400 data-[validity='invalid']:placeholder:text-red-300"
+                      />
+                      <div>
+                        <input type="checkbox" name="toggle" id="toggle" />
+                        <label for="toggle" class="select-none cursor-pointer"
+                          >Show password</label
+                        >
+                      </div>
+                      <div id="password-requirements-container" class="hidden">
+                        <p>Password must contain at least</p>
+                        <ul id="req-list">
+                          <li
+                            data-password-requirement="length"
+                            data-requirement-met="false"
+                            class="data-[requirement-met='true']:line-through"
+                          >
+                            12 or more characters
+                          </li>
+                          <li
+                            data-password-requirement="upper"
+                            data-requirement-met="false"
+                            class="data-[requirement-met='true']:line-through"
+                          >
+                            1 uppercase character
+                          </li>
+                          <li
+                            data-password-requirement="lower"
+                            data-requirement-met="false"
+                            class="data-[requirement-met='true']:line-through"
+                          >
+                            1 lowercase character
+                          </li>
+                          <li
+                            data-password-requirement="number"
+                            data-requirement-met="false"
+                            class="data-[requirement-met='true']:line-through"
+                          >
+                            1 number (digit)
+                          </li>
+                          <li
+                            data-password-requirement="special"
+                            data-requirement-met="false"
+                            class="data-[requirement-met='true']:line-through"
+                          >
+                            1 special character
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <span
+                      data-field-msg="confirmPassword"
+                      class="hidden text-sm text-red-600"
+                    ></span>
+                    <div class="flex flex-col gap-2">
+                      <label for="confirmPassword">Confirm Password</label>
+                      <input
+                        type="password"
+                        name="confirmPassword"
+                        id="confirmPassword"
+                        placeholder="********"
+                        autocomplete="new-password"
+                        data-validity="default"
+                        data-field-name="confirmPassword"
+                        class="py-2 px-3 rounded-md border-gray-200 border focus:border-blue-400 outline-none data-[validity='valid']:border-green-400 data-[validity='invalid']:border-red-400 data-[validity='invalid']:placeholder:text-red-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="flex gap-8 justify-between px-3">
+                  <button
+                    type="button"
+                    id="previous-form-step-btn"
+                    class="w-fit my-3 cursor-pointer rounded-lg py-2 px-6 text-center text-lg font-semibold border border-gray-400 capitalize"
+                  >
+                    previous
+                  </button>
+                  <button
+                    type="submit"
+                    id="submit-btn"
+                    class="w-fit my-3 cursor-pointer rounded-lg py-2 px-6 text-center text-lg font-semibold border border-gray-400 capitalize"
+                  >
+                    create account
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+          <div class="self-center justify-self-end flex gap-3">
+            Have an account?
+            <a
+              class="text-blue-400 underline hover:text-blue-600 hover:no-underline"
+              href="/login"
+              >Log In</a
+            >
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
