@@ -197,10 +197,10 @@ async function handleFormSubmission(event) {
     window.location = data.redirectUrl;
   } catch (error) {
     console.error(error);
-    handleFormSubmission([
+    handleFormSubmissionFailure([
       {
         path: "form",
-        msg: "Error Occurred. Please try again!",
+        msg: "Error occurred. Please try again!",
       },
     ]);
   }
