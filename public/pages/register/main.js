@@ -88,9 +88,7 @@ function emailFieldValid() {
   if (!emailValue) {
     valid = false;
     msg = "Please enter a valid email address";
-  }
-
-  if (!isValidEmail(emailValue)) {
+  } else if (!isValidEmail(emailValue)) {
     msg = "Email address is invalid";
     valid = false;
   }
