@@ -5,9 +5,6 @@
   "main": "server.js",
   "scripts": {
     "server": "node --watch server.js",
-    "db:setup": "node --env-file=.env.development db/populatedb.js",
-    "db:reset": "node --env-file=.env.development db/dropdb.js && npm run db:setup",
-    "db:setup:prod": "node --env-file=.env.production db/populatedb.js",
     "css:watch": "npx tailwindcss -i ./public/main.css -o ./public/shared.css --watch",
     "css:build": "npx tailwindcss -i ./public/main.css -o ./public/shared.css --minify",
     "build": "npm run css:watch",
