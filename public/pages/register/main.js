@@ -51,7 +51,19 @@ function clearFieldValidityStatus(fieldName) {
   fieldMsgElm.classList.add("hidden");
 }
 
-function reportFieldValidity(fieldName) {}
+function reportFieldValidity(fieldName) {
+  const fieldMsgElm = registerForm.querySelector(
+    `[data-field-msg='${fieldName}']`
+  );
+  const fieldElm = registerForm.querySelector(
+    `[data-field-name='${fieldName}']`
+  );
+
+  if (!fieldMsgElm || !fieldElm) return;
+
+  fieldMsgElm.classList.add("hidden");
+  fieldElm.dataset.validity = "valid";
+}
 
 function reportFieldInvalidity(fieldName, msg) {
   const fieldMsgElm = registerForm.querySelector(
