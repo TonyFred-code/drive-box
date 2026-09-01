@@ -9,7 +9,14 @@ import { handleUniqueConstraintError } from "../lib/prismaUtils.js";
 import { REGISTER_ERROR_CODES } from "../public/constants/errorCodes.js";
 
 async function checkUserIdentifierUnique(req, res, next) {
-  const userIdentifier = req.query.userIdentifier;
+  const userIdentifier = String(req.query.userIdentifier || "").trim();
+
+  if (!userIdentifier) {
+    return res
+      .status(400)
+      .json({ msg: "userIdentifier query param is required." });
+  }
+
   let userIdentifierTaken = true;
 
   try {
