@@ -11,11 +11,16 @@ function loginAuth(req, res, next) {
     }
 
     if (!user) {
+      if (req.accepts("html")) {
+        return res.redirect("/login");
+      }
+
+      const msg = info.message || "Email or password is incorrect";
       return res.status(401).json({
         errors: [
           {
             path: "form",
-            msg: info.message || "Email or password is incorrect",
+            msg,
           },
         ],
       });
