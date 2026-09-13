@@ -117,29 +117,6 @@ async function deleteDirectory(req, res) {
 async function updateDirectory(req, res) {
   const { id } = req.params;
   const { name } = req.body;
-  const malFormedErrMsg = [];
-
-  if (!id) {
-    malFormedErrMsg.push({
-      msg: "Directory id is a missing required field.",
-      field: "id",
-    });
-  }
-
-  if (!name) {
-    malFormedErrMsg.push({
-      msg: "Directory name is a missing required field",
-      field: "name",
-    });
-  }
-
-  if (malFormedErrMsg.length > 0) {
-    return res.status(400).json({
-      success: false,
-      error: malFormedErrMsg,
-    });
-  }
-
   const user = req.user;
 
   try {
