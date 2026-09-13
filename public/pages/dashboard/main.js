@@ -82,25 +82,34 @@ const ctxDeleteBtn = document.getElementById("ctx-delete");
 
 let activeContextMenuFolder = null;
 
-const INVALID_NAME_REGEX = /[/\\:*?"<>|]/;
+const VALID_CHARS_REGEX = /^[a-zA-Z0-9_\- ]+$/;
 
 function validateFolderName(name) {
+  if (typeof name !== "string") {
+    return { valid: false, message: "Folder name must be a string" };
+  }
+
   const trimmed = name.trim();
+
   if (!trimmed) {
     return { valid: false, message: "Folder name cannot be empty" };
   }
-  if (INVALID_NAME_REGEX.test(trimmed)) {
-    return {
-      valid: false,
-      message: 'Folder name cannot contain / \\ : * ? " < > |',
-    };
-  }
+
   if (trimmed.length > 32) {
     return {
       valid: false,
       message: "Folder name must be 32 characters or less",
     };
   }
+
+  if (!trimmed.match(VALID_CHARS_REGEX)) {
+    return {
+      valid: false,
+      message:
+        "Folder name can only contain letters, numbers, underscores, hyphens, and spaces",
+    };
+  }
+
   return { valid: true, message: "" };
 }
 

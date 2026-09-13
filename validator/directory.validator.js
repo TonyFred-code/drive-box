@@ -7,7 +7,7 @@ const directoryNameValidationRules = [
     .withMessage("Directory name is required")
     .isLength({ min: 1, max: 32 })
     .withMessage("Directory name must be between 1 and 32 characters long")
-    .matches(/^[a-zA-Z0-9_\-\s]+$/)
+    .matches(/^[a-zA-Z0-9_\- ]+$/)
     .withMessage(
       "Directory name can only contain letters, numbers, underscores, hyphens, and spaces"
     ),
