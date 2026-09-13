@@ -11,6 +11,8 @@ import { registerRouter } from "./routes/register.route.js";
 import { dashboardRouter } from "./routes/dashboard.route.js";
 import { logoutRouter } from "./routes/logout.route.js";
 import { loginRouter } from "./routes/login.route.js";
+import { directoryRouter } from "./routes/directory.route.js";
+import { attachUserLocals } from "./middleware/responseModifiers.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -40,7 +42,7 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24, // 1 day
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.process === "production",
+      secure: process.env.NODE_ENV === "production",
     },
     saveUninitialized: false,
   })
@@ -50,7 +52,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// attach user locals
+app.use(attachUserLocals);
+
 // ROUTES
+app.use("/directories", directoryRouter);
 app.use("/login", loginRouter);
 app.use("/logout", logoutRouter);
 app.use("/dashboard", dashboardRouter);
