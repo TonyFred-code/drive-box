@@ -6,7 +6,8 @@ function redirectIfAuthenticated(req, res, next) {
   }
 
   return res.status(409).json({
-    msg: "User is already logged in",
+    success: false,
+    error: [{ msg: "User is already logged in" }],
   });
 }
 
@@ -18,7 +19,8 @@ function requireAuth(req, res, next) {
     }
 
     return res.status(401).json({
-      msg: "User is not authenticated",
+      success: false,
+      error: [{ msg: "User is not authenticated" }],
     });
   }
 
