@@ -63,11 +63,20 @@
       
         <div class="mb-6 space-y-2">
           <% if (breadcrumbs && breadcrumbs.length > 1) { %>
-            <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm text-gray-500">
+           <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm text-gray-500">
               <% breadcrumbs.forEach((crumb, index) => { %>
                 <% const isLast = index === breadcrumbs.length - 1; %>
+                <% const isFirst = index === 0; %>
                 <% if (isLast) { %>
                   <span class="font-medium text-gray-800" aria-current="page"><%= crumb.name %></span>
+                <% } else if (isFirst) { %>
+                  <a
+                    href="/dashboard"
+                    class="hover:text-blue-600 transition-colors focus:outline-none focus:underline"
+                  >
+                    <%= crumb.name %>
+                  </a>
+                  <span class="text-gray-400">/</span>
                 <% } else { %>
                   <a
                     href="/dashboard?directoryId=<%= crumb.id %>"
