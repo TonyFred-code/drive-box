@@ -1,4 +1,8 @@
 import {
+  DIRECTORY_ERROR_CODES,
+  PRISMA_ERROR_CODES,
+} from "../constants/errorCodes.js";
+import {
   getDirectoryWithChildren,
   getDirectoryBreadcrumbs,
 } from "../db/directory.js";
@@ -63,12 +67,28 @@ async function dashboardGet(req, res) {
     console.error(error);
 
     if (req.accepts("html")) {
-      return res.redirect("/dashboard");
+      return res.redirect("/");
     }
 
-    return res.status(404).json({
+    let errorMsgObj = { msg: "An unknown error occured." };
+    let errorStatus = 500;
+
+    if (
+      error.code === DIRECTORY_ERROR_CODES.DIRECTORY_NOT_FOUND ||
+      error.code === PRISMA_ERROR_CODES.RECORD_NOT_FOUND
+    ) {
+      errorStatus = 404;
+
+      errorMsgObj.msg =
+        "The directory you are trying to access could not be found. ";
+    } else if (error.code === DIRECTORY_ERROR_CODES.DIRECTORY_ACCESS_DENIED) {
+      errorStatus = 403;
+      errorMsgObj.msg = "You are not allowed access to this directory.";
+    }
+
+    return res.status(errorStatus).json({
       success: false,
-      error: "Directory not found",
+      error: [errorMsgObj],
     });
   }
 }
