@@ -38,6 +38,12 @@ async function getUserById(id) {
     where: {
       id,
     },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      rootDirectoryId: true,
+    },
   });
 
   return user;
@@ -58,15 +64,48 @@ async function checkEmailExists(email) {
 }
 
 async function createNewUser(email, username, hashedPassword) {
-  const user = await prisma.user.create({
-    data: {
-      email,
-      username,
-      password: hashedPassword,
-    },
+  const result = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {
+        email,
+        username,
+        password: hashedPassword,
+      },
+    });
+
+    const ROOT_DIRECTORY_NAME = "home";
+
+    const rootDirectory = await tx.directory.create({
+      data: {
+        name: ROOT_DIRECTORY_NAME,
+        userId: user.id,
+        parentId: null,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    const updatedUser = await tx.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        rootDirectoryId: rootDirectory.id,
+      },
+      select: {
+        id: true,
+        rootDirectoryId: true,
+        username: true,
+        email: true,
+        createdAt: true,
+      },
+    });
+
+    return updatedUser;
   });
 
-  return user;
+  return result;
 }
 
 export {

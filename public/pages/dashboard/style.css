@@ -1,0 +1,65 @@
+#root.dashboard__page-wrapper {
+  & dialog.app-dialog {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+    transition:
+      opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      overlay 0.2s allow-discrete,
+      display 0.2s allow-discrete;
+  }
+
+  & dialog.app-dialog[open] {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  @starting-style {
+    dialog.app-dialog[open] {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+  }
+
+  & dialog.app-dialog::backdrop {
+    background-color: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition:
+      opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      overlay 0.2s allow-discrete,
+      display 0.2s allow-discrete;
+  }
+
+  & dialog.app-dialog[open]::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    & dialog.app-dialog[open]::backdrop {
+      opacity: 0;
+    }
+  }
+
+  & .folder-card {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  & .folder-card:active {
+    transform: scale(0.98);
+  }
+
+  & dialog.app-dialog::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  & dialog.app-dialog::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+
+  & .storage-progress-bar {
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}

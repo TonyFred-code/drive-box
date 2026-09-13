@@ -20,8 +20,29 @@ model Session {
 }
 
 model User {
-  id       String @id @default(uuid()) @db.Uuid
-  username String @unique @db.VarChar(32)
-  email    String @unique
-  password String
+  id              String      @id @default(uuid()) @db.Uuid
+  username        String      @unique @db.VarChar(32)
+  email           String      @unique
+  password        String
+  directories     Directory[] @relation("UserDirectories")
+  rootDirectoryId String?     @unique @db.Uuid
+  rootDirectory   Directory?  @relation("UserRoot", fields: [rootDirectoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt       DateTime    @default(now())
+}
+
+model Directory {
+  id        String      @id @default(uuid()) @db.Uuid
+  name      String      @db.VarChar(32)
+  userId    String      @db.Uuid
+  user      User        @relation("UserDirectories", fields: [userId], references: [id], onDelete: Cascade)
+  parentId  String?     @db.Uuid
+  parent    Directory?  @relation("SubDirectories", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Directory[] @relation("SubDirectories")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @default(now()) @updatedAt
+  userRoot  User?       @relation(name: "UserRoot")
+
+  @@unique([name, parentId, userId])
+  @@index([userId])
+  @@index([parentId])
 }
