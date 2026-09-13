@@ -414,9 +414,14 @@ function showRootDetails() {
 
 function showFolderDetails(folder) {
   closeAllDialogs();
+  const parentBreadCrumbs =
+    folder.id === currentDirectory.id
+      ? breadcrumbs.slice(0, breadcrumbs.length - 1)
+      : breadcrumbs;
+
   const parentName =
-    breadcrumbs && breadcrumbs.length > 0
-      ? `/${breadcrumbs.map((b) => b.name).join("/")}/`
+    parentBreadCrumbs && parentBreadCrumbs.length > 0
+      ? `/${parentBreadCrumbs.map((b) => b.name).join("/")}/`
       : "/";
 
   detailsContent.innerHTML = `
