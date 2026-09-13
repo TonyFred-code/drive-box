@@ -168,17 +168,6 @@ viewStorageBtn?.addEventListener("click", () => {
   showRootDetails();
 });
 
-document.querySelectorAll(".folder-card").forEach((card) => {
-  // Navigation triggers on card click (except 3-dots button)
-  card.addEventListener("click", (e) => {
-    if (e.target.closest(".item-menu-btn")) return;
-    const folderId = card.dataset.id;
-    if (folderId) {
-      window.location.href = `/dashboard?directoryId=${encodeURIComponent(folderId)}`;
-    }
-  });
-});
-
 function openNewFolderDialog() {
   closeAllDialogs();
   newFolderError.classList.add("hidden");
