@@ -245,10 +245,6 @@ newFolderForm?.addEventListener("submit", async (e) => {
   }
 });
 
-// ============================================================================
-// RENAME FOLDER DIALOG & UPDATING
-// ============================================================================
-
 function openRenameFolderDialog(folderId, currentName) {
   closeAllDialogs();
   renameFolderIdInput.value = folderId;
@@ -302,12 +298,12 @@ renameFolderForm?.addEventListener("submit", async (e) => {
       if (res.status === 409) {
         if (folderId === currentDirectory?.id) {
           const parentCrumb =
-            breadcrumbs && breadcrumbs.length >= 2
+            breadcrumbs && breadcrumbs.length >= 3
               ? breadcrumbs[breadcrumbs.length - 2]
               : null;
           errMsg = parentCrumb
             ? `A directory with this name already exists in the parent directory ("${parentCrumb.name}")`
-            : "A directory with this name already exists in the parent directory";
+            : "A directory with this name already exists in your home directory";
         } else {
           errMsg =
             "A directory with this name already exists in this directory";
@@ -359,7 +355,7 @@ confirmDeleteFolderBtn?.addEventListener("click", async () => {
     if (isCurrent) {
       const parentCrumb =
         breadcrumbs && breadcrumbs.length >= 3
-          ? breadcrumbs[breadcrumbs.length - 3]
+          ? breadcrumbs[breadcrumbs.length - 2]
           : null;
       if (parentCrumb) {
         window.location.href = `/dashboard?directoryId=${encodeURIComponent(parentCrumb.id)}`;
