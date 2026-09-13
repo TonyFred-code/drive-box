@@ -33,7 +33,7 @@ function loginAuth(req, res, next) {
         return next(error);
       }
 
-      if (!user.rootDirectory) {
+      if (!user.rootDirectoryId) {
         await prisma.$transaction(async (tx) => {
           const rootDirectory = await tx.directory.create({
             data: {
@@ -60,7 +60,7 @@ function loginAuth(req, res, next) {
             },
           });
 
-          user.rootDirectory = rootDirectory.id;
+          user.rootDirectoryId = rootDirectory.id;
           console.warn(
             "[SELF-HEAL]: Created root directory for user:",
             JSON.stringify({ updatedUser })
