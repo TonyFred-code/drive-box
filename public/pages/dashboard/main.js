@@ -149,7 +149,15 @@ document.querySelectorAll("dialog").forEach((dialog) => {
 if (profileMenuBtn && profileDropdown) {
   profileMenuBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    profileDropdown.classList.toggle("hidden");
+
+    if (profileDropdown.classList.contains("hidden")) {
+      closeAllDialogs();
+      profileMenuBtn.setAttribute("aria-expanded", "true");
+      profileDropdown.classList.remove("hidden");
+    } else {
+      profileMenuBtn.setAttribute("aria-expanded", "false");
+      profileDropdown.classList.add("hidden");
+    }
   });
 
   document.addEventListener("click", (e) => {
