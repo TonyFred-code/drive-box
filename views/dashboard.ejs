@@ -476,7 +476,7 @@
           email: user.email,
           rootDirectoryId: user.rootDirectoryId
         }
-      }) %>
+      }).replace(/</g, "\u003c").replace(/>/g, "\u003e"); %>
     </script>
   </body>
 </html>
