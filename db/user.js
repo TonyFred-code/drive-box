@@ -74,27 +74,35 @@ async function createNewUser(email, username, hashedPassword) {
     });
 
     const ROOT_DIRECTORY_NAME = "home";
-    const ROOT_DIRECTORY_ID = crypto.randomUUID();
 
-    await tx.directory.create({
+    const rootDirectory = await tx.directory.create({
       data: {
         name: ROOT_DIRECTORY_NAME,
         userId: user.id,
-        id: ROOT_DIRECTORY_ID,
         parentId: null,
+      },
+      select: {
+        id: true,
       },
     });
 
-    await tx.user.update({
+    const updatedUser = await tx.user.update({
       where: {
         id: user.id,
       },
       data: {
-        rootDirectoryId: ROOT_DIRECTORY_ID,
+        rootDirectoryId: rootDirectory.id,
+      },
+      select: {
+        id: true,
+        rootDirectoryId: true,
+        username: true,
+        email: true,
+        createdAt: true,
       },
     });
 
-    return user;
+    return updatedUser;
   });
 
   return result;
