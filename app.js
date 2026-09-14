@@ -29,6 +29,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // SESSION SETUP
 
+app.set("trust proxy", 1);
+
 app.use(
   session({
     store: new PrismaSessionStore(prisma, {
