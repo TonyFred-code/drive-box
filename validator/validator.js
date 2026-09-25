@@ -13,5 +13,5 @@ const customValidator = new ExpressValidator(
   }
 );
 
-export const { body, validationResult, param } = customValidator;
+export const { body, validationResult, param, query } = customValidator;
 export default validationResult;
