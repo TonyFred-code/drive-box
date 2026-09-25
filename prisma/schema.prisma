@@ -4,8 +4,8 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider         = "prisma-client-js"
+  output           = "../generated/prisma"
 }
 
 datasource db {
@@ -28,6 +28,7 @@ model User {
   rootDirectoryId String?     @unique @db.Uuid
   rootDirectory   Directory?  @relation("UserRoot", fields: [rootDirectoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   createdAt       DateTime    @default(now())
+  files           File[]      @relation("UserFiles")
 }
 
 model Directory {
@@ -41,8 +42,33 @@ model Directory {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @default(now()) @updatedAt
   userRoot  User?       @relation(name: "UserRoot")
+  files     File[]      @relation("DirectoryFiles")
 
   @@unique([name, parentId, userId])
   @@index([userId])
   @@index([parentId])
+}
+
+model File {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user   User   @relation("UserFiles", fields: [userId], references: [id])
+
+  directoryId String?    @db.Uuid
+  directory   Directory? @relation("DirectoryFiles", fields: [directoryId], references: [id], onDelete: Cascade)
+
+  name         String @db.VarChar(32)
+  originalName String
+  size         Int
+  mimeType     String
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @default(now()) @db.Timestamptz() @updatedAt
+
+  storagePath String
+
+  deletedAt DateTime? @db.Timestamptz()
+
+  @@index([userId])
+  @@index([directoryId])
 }
