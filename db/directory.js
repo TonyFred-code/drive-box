@@ -8,6 +8,7 @@ async function getDirectoryWithChildren(id, userId) {
     },
     include: {
       children: true,
+      files: true,
     },
   });
 
@@ -22,6 +23,9 @@ async function getDirectoryWithChildren(id, userId) {
     error.code = DIRECTORY_ERROR_CODES.DIRECTORY_ACCESS_DENIED;
     throw error;
   }
+
+  const files = directory.files.filter((file) => !file.deletedAt);
+  directory.files = files;
 
   return directory;
 }
@@ -168,7 +172,34 @@ async function getDirectoryBreadcrumbs(directoryId, userId) {
   return breadcrumbs;
 }
 
+async function canAllowFileUpload(userId, directoryId) {
+  const directory = await prisma.directory.findUnique({
+    where: {
+      id: directoryId,
+    },
+    select: {
+      id: true,
+      userId: true,
+    },
+  });
+
+  if (!directory) {
+    const error = new Error("Directory not found");
+    error.code = DIRECTORY_ERROR_CODES.DIRECTORY_NOT_FOUND;
+    throw error;
+  }
+
+  if (directory.userId !== userId) {
+    const error = new Error("You are not allowed access");
+    error.code = DIRECTORY_ERROR_CODES.DIRECTORY_ACCESS_DENIED;
+    throw error;
+  }
+
+  return true;
+}
+
 export {
+  canAllowFileUpload,
   getDirectoryWithChildren,
   getDirectoryBreadcrumbs,
   createDirectory,
