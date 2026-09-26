@@ -1,4 +1,5 @@
 import { formatBytes, formatDate } from "../../lib/dashboardUtils.js";
+import { files } from "./serverData.js";
 import { uiState } from "./uiState.js";
 
 const fileDetailsDialog = document.getElementById("dialog-file-details");
@@ -9,6 +10,8 @@ const ctxFileDetailsBtn = document.getElementById("ctx-file-details");
 function displayFileDetails(file) {
   const fileId = file.id;
   const fileData = files.find((f) => f.id === fileId);
+
+  if (!fileData) return;
 
   fileDetails.innerHTML = `
     <div class="space-y-2">
