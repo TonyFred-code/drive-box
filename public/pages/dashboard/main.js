@@ -51,25 +51,36 @@ document.querySelectorAll(".item-menu-btn").forEach((btn) => {
     const folderCard = btn.closest(".folder-card");
 
     if (folderCard) {
-      uiState.activeContextMenuFolder = {
-        id: folderCard.dataset.id,
-        name: folderCard.dataset.name,
-        createdAt: folderCard.dataset.createdAt,
-        updatedAt: folderCard.dataset.updatedAt,
-      };
-      showFolderContextMenu(btn, folderCard);
+      if (folderContextMenuIsOpen()) {
+        closeFolderContextMenu();
+      } else {
+        uiState.activeContextMenuFolder = {
+          id: folderCard.dataset.id,
+          name: folderCard.dataset.name,
+          createdAt: folderCard.dataset.createdAt,
+          updatedAt: folderCard.dataset.updatedAt,
+        };
+        showFolderContextMenu(btn, folderCard);
+        closeFileContextMenu();
+        return;
+      }
     }
 
     const fileCard = btn.closest(".file-card");
 
     if (fileCard) {
-      uiState.activeContextMenuFile = {
-        id: fileCard.dataset.id,
-        name: fileCard.dataset.name,
-        createdAt: fileCard.dataset.createdAt,
-        updatedAt: fileCard.dataset.updatedAt,
-      };
-      showFileContextMenu(fileCard, btn);
+      if (fileContextMenuIsOpen()) {
+        closeFileContextMenu();
+      } else {
+        uiState.activeContextMenuFile = {
+          id: fileCard.dataset.id,
+          name: fileCard.dataset.name,
+          createdAt: fileCard.dataset.createdAt,
+          updatedAt: fileCard.dataset.updatedAt,
+        };
+        showFileContextMenu(fileCard, btn);
+        closeFolderContextMenu();
+      }
     }
   });
 });
