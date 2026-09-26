@@ -1,11 +1,11 @@
 import {
   MAX_FILENAME_LENGTH,
+  MAX_FILES_COUNT_PER_UPLOAD,
+  MAX_TOTAL_SIZE,
   VALID_FILENAME_REGEX,
-} from "../constants/fileContstants.js";
+} from "../constants/fileConstants.js";
+import { formatBytes } from "../lib/fileUtils.js";
 import { body, param, query } from "./validator.js";
-
-const MAX_FILES_COUNT_PER_UPLOAD = 10;
-const MAX_FILE_SIZE = 1024 * 1024 * 10; // 10MB
 
 const fileUploadRules = [
   body("directoryId")
@@ -25,11 +25,19 @@ const fileUploadRules = [
     }
 
     for (const file of req.files) {
-      if (file.size > MAX_FILE_SIZE) {
+      if (file.size > MAX_TOTAL_SIZE) {
         throw new Error(
-          `Maximum individual file size is ${MAX_FILE_SIZE / 1024 / 1024}MB`
+          `Maximum individual file size is ${formatBytes(MAX_TOTAL_SIZE)}`
         );
       }
+    }
+
+    const totalBytes = req.files.reduce((sum, file) => sum + file.size, 0);
+
+    if (totalBytes > MAX_TOTAL_SIZE) {
+      throw new Error(
+        `Total upload size exceeds ${formatBytes(MAX_TOTAL_SIZE)} limit. Received: ${formatBytes(totalBytes)}`
+      );
     }
 
     return true;
