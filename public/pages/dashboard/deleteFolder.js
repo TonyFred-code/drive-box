@@ -1,5 +1,5 @@
 import { closeFolderContextMenu } from "./folderContextMenu.js";
-import { breadcrumbs } from "./serverData.js";
+import { breadcrumbs, currentDirectory } from "./serverData.js";
 import { uiState } from "./uiState.js";
 
 const deleteFolderDialog = document.getElementById("dialog-delete-folder");
@@ -21,11 +21,7 @@ function openDeleteFolderDialog(folderId, folderName, isCurrent = false) {
 }
 
 menuDeleteCurrentBtn?.addEventListener("click", () => {
-  openDeleteFolderDialog(
-    uiState.currentDirectory.id,
-    uiState.currentDirectory.name,
-    true
-  );
+  openDeleteFolderDialog(currentDirectory.id, currentDirectory.name, true);
 });
 
 confirmDeleteFolderBtn?.addEventListener("click", async () => {
