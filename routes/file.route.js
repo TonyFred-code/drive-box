@@ -54,7 +54,7 @@ fileRouter.delete(
 );
 
 // Update file name
-fileRouter.put(
+fileRouter.patch(
   "/:fileId",
   fileUpdateRules,
   handleValidationError,

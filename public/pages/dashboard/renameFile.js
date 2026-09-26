@@ -72,7 +72,7 @@ async function handleRenameFileSubmit(e) {
 
   try {
     const response = await fetch(`/files/${renameFileIdInput.value}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
