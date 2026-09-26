@@ -3,8 +3,7 @@ import { uiState } from "./uiState.js";
 const deleteFileDialog = document.getElementById("dialog-delete-file");
 const deleteFileSummary = document.getElementById("delete-file-summary");
 const deleteFileBtn = document.getElementById("delete-file-btn");
-
-function openDeleteFileDialog() {}
+const ctxDeleteFileBtn = document.getElementById("ctx-delete-file");
 
 async function handleFileDeletion(fileId) {
   try {
@@ -35,4 +34,11 @@ deleteFileBtn?.addEventListener("click", () => {
 
   const fileId = uiState.activeContextMenuFile.id;
   handleFileDeletion(fileId);
+});
+
+ctxDeleteFileBtn?.addEventListener("click", () => {
+  if (!uiState.activeContextMenuFile) return;
+
+  deleteFileSummary.textContent = `Are you sure you want to delete "${uiState.activeContextMenuFile.name}"?`;
+  deleteFileDialog.showModal();
 });

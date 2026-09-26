@@ -3,7 +3,6 @@ import { uiState } from "./uiState.js";
 const fileContextMenu = document.getElementById("file-context-menu");
 const ctxViewLink = document.getElementById("ctx-view");
 const ctxDownloadLink = document.getElementById("ctx-download");
-const ctxDeleteFileBtn = document.getElementById("ctx-delete-file");
 
 function showFileContextMenu(card, btn) {
   // Calculate position
@@ -31,13 +30,6 @@ function showFileContextMenu(card, btn) {
 function closeFileContextMenu() {
   fileContextMenu.classList.add("hidden");
 }
-
-ctxDeleteFileBtn?.addEventListener("click", () => {
-  if (!uiState.activeContextMenuFile) return;
-
-  deleteFileSummary.textContent = `Are you sure you want to delete "${uiState.activeContextMenuFile.name}"?`;
-  deleteFileDialod.showModal();
-});
 
 function fileContextMenuIsOpen() {
   return !fileContextMenu.classList.contains("hidden");
