@@ -1,6 +1,6 @@
 const MAX_FILES_COUNT_PER_UPLOAD = 10;
 
-const MAX_TOTAL_SIZE = 5 * 1024 * 1024;
+const MAX_TOTAL_SIZE = 5 * 1024 * 1024; // 5MB per upload (also per file)
 
 const VALID_FILENAME_REGEX = /^[a-zA-Z0-9_\-. ]+$/;
 

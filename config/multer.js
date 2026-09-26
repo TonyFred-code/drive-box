@@ -1,6 +1,10 @@
 import multer from "multer";
 import { ALLOWED_MIME_TYPES } from "../constants/allowedFileMimeTypes.js";
 import { MULTER_ERROR_CODES } from "../constants/errorCodes.js";
+import {
+  MAX_FILES_COUNT_PER_UPLOAD,
+  MAX_TOTAL_SIZE,
+} from "../constants/fileConstants.js";
 
 function fileFilter(req, file, cb) {
   if (ALLOWED_MIME_TYPES.has(file.mimetype)) {
@@ -18,8 +22,8 @@ function fileFilter(req, file, cb) {
 const multerUpload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10 MB per file
-    files: 10, // 10 files per upload
+    fileSize: MAX_TOTAL_SIZE,
+    files: MAX_FILES_COUNT_PER_UPLOAD,
   },
   fileFilter,
 });
