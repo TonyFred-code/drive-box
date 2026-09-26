@@ -1,5 +1,5 @@
 const uiState = {
-  seletedFiles: [],
+  selectedFiles: [],
   activeContextMenuFile: null,
   activeContextMenuFolder: null,
 };
