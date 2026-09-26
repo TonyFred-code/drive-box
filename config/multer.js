@@ -1,5 +1,5 @@
 import multer from "multer";
-import { ALLOWED_MIME_TYPES } from "../constants/alloedFileMimeTypes.js";
+import { ALLOWED_MIME_TYPES } from "../constants/allowedFileMimeTypes.js";
 import { MULTER_ERROR_CODES } from "../constants/errorCodes.js";
 
 function fileFilter(req, file, cb) {
