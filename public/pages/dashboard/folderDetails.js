@@ -85,7 +85,6 @@ function showRootDetails() {
 }
 
 menuCurrentDetailsBtn?.addEventListener("click", () => {
-  debugger;
   if (isRoot) {
     showRootDetails();
   } else {

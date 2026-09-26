@@ -27,7 +27,6 @@ function displayFileDetails(file) {
 }
 
 ctxFileDetailsBtn?.addEventListener("click", () => {
-  debugger;
   if (!uiState.activeContextMenuFile) return;
 
   displayFileDetails(uiState.activeContextMenuFile);
