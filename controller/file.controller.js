@@ -25,28 +25,35 @@ const VALID_BASENAME_REGEX = /^[a-zA-Z0-9_\- ]+$/;
 const MAX_FILE_NAME_LENGTH = 32;
 
 /**
- * Validates a file name
+ * Validates a file name before upload.
  *
- * @param {string} fileName - Name of the file to be validated
- * @returns {{ valid: boolean, reason: string}}
+ * The character-set check runs on the stem only (extension contains a dot
+ * which would incorrectly fail the regex). The length check runs on the
+ * full original name (stem + extension) because that is the value stored
+ * in File.name VARCHAR(32).
+ *
+ * @param {string} stem     - File name without extension
+ * @param {string} fullName - Complete original file name (stem + extension)
+ * @returns {{ valid: boolean, reason: string }}
  */
-function validateFileDisplayName(fileName) {
-  const trimmed = fileName.trim();
+function validateFileDisplayName(stem, fullName) {
+  const trimmedStem = stem.trim();
+  const trimmedFull = fullName.trim();
 
-  if (!trimmed)
+  if (!trimmedStem)
     return {
       valid: false,
       reason: "File name is missing.",
     };
 
-  if (trimmed.length > 32) {
+  if (trimmedFull.length > MAX_FILE_NAME_LENGTH) {
     return {
       valid: false,
-      reason: "File name is too long.",
+      reason: `File name exceeds the ${MAX_FILE_NAME_LENGTH}-character limit (${trimmedFull.length} characters).`,
     };
   }
 
-  if (!trimmed.match(VALID_BASENAME_REGEX)) {
+  if (!trimmedStem.match(VALID_BASENAME_REGEX)) {
     return {
       valid: false,
       reason:
@@ -87,7 +94,10 @@ async function uploadMultipleFiles(req, res) {
 
   for (const file of files) {
     const fileNameWithoutExt = extractFileNameWithoutExt(file.originalname);
-    const fileNameValid = validateFileDisplayName(fileNameWithoutExt);
+    const fileNameValid = validateFileDisplayName(
+      fileNameWithoutExt,
+      file.originalname
+    );
 
     if (fileNameValid.valid) {
       try {
