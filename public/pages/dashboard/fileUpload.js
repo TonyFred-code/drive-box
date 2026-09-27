@@ -250,6 +250,14 @@ removeAllFilesBtn?.addEventListener("click", () => {
   fileList.classList.add("hidden");
 });
 
+// Submit the upload form with Enter when files are ready
+fileUploadDialog?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !uploadBtn.disabled) {
+    e.preventDefault();
+    uploadForm.requestSubmit();
+  }
+});
+
 uploadResultsDialog?.addEventListener("close", () => window.location.reload());
 
-uploadBtn?.addEventListener("click", handleUploadFile);
+uploadForm?.addEventListener("submit", handleUploadFile);
