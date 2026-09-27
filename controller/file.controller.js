@@ -138,7 +138,22 @@ async function uploadMultipleFiles(req, res) {
         file.mimetype,
         userId
       );
-      await updateFileStorageDetails(dbId, storagePath);
+
+      try {
+        await updateFileStorageDetails(dbId, storagePath);
+      } catch (error) {
+        console.error(
+          `[upload] Failed to update file storage details for "${file.originalname}" (id: ${dbId}):`,
+          error
+        );
+        await deleteFromStorage(storagePath).catch((cleanupError) => {
+          console.error(
+            `[storage] Failed to prune storage object for "${file.originalname}" (id: ${dbId}):`,
+            cleanupError
+          );
+        });
+        throw error;
+      }
       return { originalName: file.originalname, dbId };
     })
   );
