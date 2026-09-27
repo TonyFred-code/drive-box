@@ -88,25 +88,28 @@ function displaySelectedFiles(files) {
     fileItem.className =
       "flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-3 mb-2";
 
-    fileItem.innerHTML = `
-            <div class="flex flex-col">
-                <span class="file-name font-medium text-gray-800 truncate max-w-[20rem]">${file.name}</span>
-            </div>
-            <button 
-                type="button" 
-                class="remove-file text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-300 font-bold text-lg p-3 cursor-pointer" 
-                data-file-index="${index}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        `;
+    const metaWrapper = document.createElement("div");
+    metaWrapper.className = "flex flex-col";
 
-    const removeBtn = fileItem.querySelector(".remove-file");
-    removeBtn?.addEventListener("click", (e) => {
+    const nameSpan = document.createElement("span");
+    nameSpan.className =
+      "file-name font-medium text-gray-800 truncate max-w-[20rem]";
+    nameSpan.textContent = file.name;
+    metaWrapper.appendChild(nameSpan);
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className =
+      "remove-file text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-300 font-bold text-lg p-3 cursor-pointer";
+    removeBtn.dataset.fileIndex = index;
+    removeBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+    removeBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       removeFile(index);
     });
+
+    fileItem.appendChild(metaWrapper);
+    fileItem.appendChild(removeBtn);
     selectedFilesDetails.appendChild(fileItem);
   });
 }
@@ -140,21 +143,33 @@ function handleUploadError(error, result = null) {
   uploadErrorDetails.innerHTML = "";
 
   if (result && Array.isArray(result.failed) && result.failed.length > 0) {
-    uploadErrorDetails.innerHTML += `
-    <p class="text-gray-700 mb-2"><strong>Failed Uploads:</strong></p>
-    <ul class="space-y-1">
-    ${result.failed
-      .map(
-        (f) => `
-        <li class="flex flex-col">
-        <p>Name: <strong>${f.originalName}</strong></p>
-        <p class="text-gray-600">Reason: ${f.reason}</p>
-        </li>
-      `
-      )
-      .join("")}
-    </ul>
-  `;
+    const heading = document.createElement("p");
+    heading.className = "text-gray-700 mb-2";
+    heading.innerHTML = "<strong>Failed Uploads:</strong>";
+    uploadErrorDetails.appendChild(heading);
+
+    const ul = document.createElement("ul");
+    ul.className = "space-y-1";
+
+    result.failed.forEach((f) => {
+      const li = document.createElement("li");
+      li.className = "flex flex-col";
+
+      const nameLine = document.createElement("p");
+      const nameLabel = document.createElement("strong");
+      nameLabel.textContent = f.originalName;
+      nameLine.append("Name: ", nameLabel);
+
+      const reasonLine = document.createElement("p");
+      reasonLine.className = "text-gray-600";
+      reasonLine.textContent = `Reason: ${f.reason}`;
+
+      li.appendChild(nameLine);
+      li.appendChild(reasonLine);
+      ul.appendChild(li);
+    });
+
+    uploadErrorDetails.appendChild(ul);
   }
 
   uploadErrorDialog.showModal();
@@ -169,37 +184,48 @@ function handleUploadResult(result) {
   uploadResultsSummary.textContent = summaryText;
 
   uploadResultsStored.innerHTML = "";
-  uploadResultsStored.innerHTML += `
-  <p class="text-gray-700 mb-2"><strong>Stored:</strong></p>
-  <ul class="space-y-1">
-    ${successfulUploads
-      .map(
-        (f) => `
-        <li class="flex flex-col">
-        <p>Name: <strong>${f.originalName}</strong></p>
-        </li>
-      `
-      )
-      .join("")}
-  </ul>
-`;
+  const storedHeading = document.createElement("p");
+  storedHeading.className = "text-gray-700 mb-2";
+  storedHeading.innerHTML = "<strong>Stored:</strong>";
+  uploadResultsStored.appendChild(storedHeading);
+
+  const storedUl = document.createElement("ul");
+  storedUl.className = "space-y-1";
+  successfulUploads.forEach((f) => {
+    const li = document.createElement("li");
+    li.className = "flex flex-col";
+    const nameLine = document.createElement("p");
+    const nameLabel = document.createElement("strong");
+    nameLabel.textContent = f.originalName;
+    nameLine.append("Name: ", nameLabel);
+    li.appendChild(nameLine);
+    storedUl.appendChild(li);
+  });
+  uploadResultsStored.appendChild(storedUl);
 
   uploadResultsFailed.innerHTML = "";
-  uploadResultsFailed.innerHTML += `
-  <p class="text-gray-700 mb-2"><strong>Failed:</strong></p>
-  <ul class="space-y-1">
-    ${failedUploads
-      .map(
-        (f) => `
-        <li class="flex flex-col">
-        <p>Name: <strong>${f.originalName}</strong></p>
-        <p class="text-gray-600">Reason: ${f.reason}</p>
-        </li>
-      `
-      )
-      .join("")}
-  </ul>
-`;
+  const failedHeading = document.createElement("p");
+  failedHeading.className = "text-gray-700 mb-2";
+  failedHeading.innerHTML = "<strong>Failed:</strong>";
+  uploadResultsFailed.appendChild(failedHeading);
+
+  const failedUl = document.createElement("ul");
+  failedUl.className = "space-y-1";
+  failedUploads.forEach((f) => {
+    const li = document.createElement("li");
+    li.className = "flex flex-col";
+    const nameLine = document.createElement("p");
+    const nameLabel = document.createElement("strong");
+    nameLabel.textContent = f.originalName;
+    nameLine.append("Name: ", nameLabel);
+    const reasonLine = document.createElement("p");
+    reasonLine.className = "text-gray-600";
+    reasonLine.textContent = `Reason: ${f.reason}`;
+    li.appendChild(nameLine);
+    li.appendChild(reasonLine);
+    failedUl.appendChild(li);
+  });
+  uploadResultsFailed.appendChild(failedUl);
 
   uploadResultsDialog.showModal();
 }

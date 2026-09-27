@@ -26,12 +26,12 @@ function showFolderDetails(folder) {
 
   detailsContent.innerHTML = `
     <div class="space-y-4">
-      <h4 class="font-bold text-lg text-gray-900 border-b border-gray-100 pb-2">${folder.name}</h4>
+      <h4 id="_fd-name" class="font-bold text-lg text-gray-900 border-b border-gray-100 pb-2"></h4>
 
       <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-200 space-y-2 text-xs">
         <div>
           <span class="block text-gray-400 uppercase font-semibold">Parent Folder</span>
-          <span class="text-gray-800 font-mono">${parentName}</span>
+          <span id="_fd-parent" class="text-gray-800 font-mono"></span>
         </div>
         <div>
           <span class="block text-gray-400 uppercase font-semibold">Statistics</span>
@@ -51,6 +51,11 @@ function showFolderDetails(folder) {
       </div>
     </div>
   `;
+
+  // Set user-controlled values via textContent after the skeleton is in the DOM
+  detailsContent.querySelector("#_fd-name").textContent = folder.name;
+  detailsContent.querySelector("#_fd-parent").textContent = parentName;
+
   detailsDialog.showModal();
 }
 

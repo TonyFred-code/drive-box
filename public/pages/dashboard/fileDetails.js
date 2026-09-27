@@ -15,13 +15,16 @@ function displayFileDetails(file) {
 
   fileDetails.innerHTML = `
     <div class="space-y-2">
-      <p><span class="font-medium">Name:</span> ${fileData.name}</p>
+      <p><span class="font-medium">Name:</span> <span id="_fdd-name"></span></p>
       <p><span class="font-medium">Size:</span> ${formatBytes(fileData.size)}</p>
-      <p><span class="font-medium">Type:</span> ${fileData.mimeType}</p>
+      <p><span class="font-medium">Type:</span> <span id="_fdd-mime"></span></p>
       <p><span class="font-medium">Created at:</span> ${formatDate(fileData.createdAt)}</p>
       <p><span class="font-medium">Updated at:</span> ${formatDate(fileData.updatedAt)}</p>
     </div>
   `;
+
+  fileDetails.querySelector("#_fdd-name").textContent = fileData.name;
+  fileDetails.querySelector("#_fdd-mime").textContent = fileData.mimeType;
 
   fileDetailsDialog.showModal();
 }
