@@ -95,7 +95,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           <% if (children && children.length > 0) { %>
           <% children.forEach(child => { %>
-          <div class="folder-card group relative p-3.5 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all duration-150 " data-id="<%= child.id %>" data-name="<%= child.name %>" data-created-at="<%= child.createdAt %>" data-updated-at="<%= child.updatedAt %>">
+          <div class="folder-card group relative p-3.5 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all duration-150" data-id="<%= child.id %>" data-name="<%= child.name %>" data-created-at="<%= child.createdAt %>" data-updated-at="<%= child.updatedAt %>" data-tooltip="<%= child.name %>">
             <a href="/dashboard?directoryId=<%= child.id %>" class="absolute inset-0 z-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Open folder <%= child.name %>"></a>
 
             <div class="pointer-events-none">
@@ -106,7 +106,7 @@
               </div>
 
               <div class="flex items-center justify-between gap-1 pt-3 pr-8">
-                <span class="text-sm font-semibold text-gray-800 truncate flex-1 group-hover:text-blue-600" title="<%= child.name %>" >
+                <span class="text-sm font-semibold text-gray-800 truncate flex-1 group-hover:text-blue-600">
                   <%= child.name %>
                 </span>
               </div>
@@ -124,7 +124,7 @@
           <% if (files && files.length > 0) { %>
             <% files.forEach(file => { %>
             <% const icon = getFileIcon(file.mimeType); %>
-              <div class="file-card group relative p-3.5 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all duration-150 " data-id="<%= file.id %>" data-name="<%= file.name %>" data-created-at="<%= file.createdAt %>" data-updated-at="<%= file.updatedAt %>">
+              <div class="file-card group relative p-3.5 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all duration-150" data-id="<%= file.id %>" data-name="<%= file.name %>" data-created-at="<%= file.createdAt %>" data-updated-at="<%= file.updatedAt %>" data-tooltip="<%= file.name %>">
                 <a href="/files/<%= file.id %>/view" target="_blank" rel="noopener noreferrer" class="absolute inset-0 z-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Open file <%= file.name %>"></a>
 
                 <div class="pointer-events-none">
@@ -135,7 +135,7 @@
                   </div>
 
                   <div class="flex items-center justify-between gap-1 pt-3 pr-8">
-                    <span class="text-sm font-semibold text-gray-800 truncate flex-1 group-hover:text-blue-600" title="<%= file.name %>">
+                    <span class="text-sm font-semibold text-gray-800 truncate flex-1 group-hover:text-blue-600">
                       <%= file.name %>
                     </span>
                   </div>
