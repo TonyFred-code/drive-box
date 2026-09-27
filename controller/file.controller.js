@@ -180,25 +180,14 @@ async function uploadMultipleFiles(req, res) {
   });
 }
 
-function parseExpiresIn(raw) {
-  const MAX = 60 * 60;
-  const DEFAULT = 15 * 60;
-  if (!raw) return DEFAULT;
-  const parsed = parseInt(raw, 10);
-  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT;
-  return Math.min(parsed, MAX);
-}
-
 async function downloadFile(req, res) {
   const { fileId } = req.params;
   const userId = req.user.id;
-  const expiresIn = parseExpiresIn(req.query.expiresIn);
 
   try {
     const file = await getFileForUser(fileId, userId);
     const signedUrl = await createSignedUrl(
       file.storagePath,
-      expiresIn,
       true // download = true (Content-Disposition: attachment)
     );
     return res.redirect(302, signedUrl);
@@ -220,13 +209,11 @@ async function downloadFile(req, res) {
 async function viewFile(req, res) {
   const { fileId } = req.params;
   const userId = req.user.id;
-  const expiresIn = parseExpiresIn(req.query.expiresIn);
 
   try {
     const file = await getFileForUser(fileId, userId);
     const signedUrl = await createSignedUrl(
       file.storagePath,
-      expiresIn,
       false // download = false (Content-Disposition: inline)
     );
     return res.redirect(302, signedUrl);

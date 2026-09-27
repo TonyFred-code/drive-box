@@ -533,12 +533,24 @@
   </div>
 
   <div id="file-context-menu" class="hidden fixed z-50 w-44 rounded-xl bg-white shadow-xl ring-1 ring-black/10 py-1.5 text-sm transform origin-top-left transition-all">
-    <a href="#" id="ctx-view" target="_blank" rel="noopener noreferrer" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2 font-medium">
-      <span>View</span>
-    </a>
-    <a href="#" id="ctx-download" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2 font-medium">
-      <span>Download</span>
-    </a>
+    <div class="relative group/view">
+      <a href="#" id="ctx-view" target="_blank" rel="noopener noreferrer" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2 font-medium">
+        <span>View</span>
+      </a>
+      <div class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 rounded-lg bg-gray-900 px-3 py-1.5 text-center text-xs text-white shadow-lg opacity-0 group-hover/view:opacity-100 transition-opacity duration-150 z-50">
+        Link expires after 24 hours
+        <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+      </div>
+    </div>
+    <div class="relative group/dl">
+      <a href="#" id="ctx-download" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2 font-medium">
+        <span>Download</span>
+      </a>
+      <div class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 rounded-lg bg-gray-900 px-3 py-1.5 text-center text-xs text-white shadow-lg opacity-0 group-hover/dl:opacity-100 transition-opacity duration-150 z-50">
+        Link expires after 24 hours
+        <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+      </div>
+    </div>
     <button type="button" id="ctx-rename-file" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
       <span>Rename</span>
     </button>
