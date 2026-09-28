@@ -19,53 +19,10 @@ import {
   deleteFromStorage,
 } from "../lib/storage.js";
 import path from "path";
-import { extractFileNameWithoutExt } from "../lib/fileUtils.js";
-
-const VALID_BASENAME_REGEX = /^[a-zA-Z0-9_\- ]+$/;
-const MAX_FILE_NAME_LENGTH = 32;
-
-/**
- * Validates a file name before upload.
- *
- * The character-set check runs on the stem only (extension contains a dot
- * which would incorrectly fail the regex). The length check runs on the
- * full original name (stem + extension) because that is the value stored
- * in File.name VARCHAR(32).
- *
- * @param {string} stem     - File name without extension
- * @param {string} fullName - Complete original file name (stem + extension)
- * @returns {{ valid: boolean, reason: string }}
- */
-function validateFileDisplayName(stem, fullName) {
-  const trimmedStem = stem.trim();
-  const trimmedFull = fullName.trim();
-
-  if (!trimmedStem)
-    return {
-      valid: false,
-      reason: "File name is missing.",
-    };
-
-  if (trimmedFull.length > MAX_FILE_NAME_LENGTH) {
-    return {
-      valid: false,
-      reason: `File name exceeds the ${MAX_FILE_NAME_LENGTH}-character limit (${trimmedFull.length} characters).`,
-    };
-  }
-
-  if (!trimmedStem.match(VALID_BASENAME_REGEX)) {
-    return {
-      valid: false,
-      reason:
-        "File name can only contain letters, numbers, underscores, hyphens, and spaces",
-    };
-  }
-
-  return {
-    valid: true,
-    reason: "",
-  };
-}
+import {
+  extractFileNameWithoutExt,
+  validateFileDisplayName,
+} from "../lib/fileUtils.js";
 
 async function uploadMultipleFiles(req, res) {
   const files = req.files;
