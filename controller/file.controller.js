@@ -54,12 +54,12 @@ async function uploadMultipleFiles(req, res) {
   }
 
   const uploadFileSize = files.reduce((acc, file) => acc + file.size, 0);
-  if (uploadFileSize > user.storageQuotaBytes) {
+  if (uploadFileSize > user.storageQuota) {
     return res.status(400).json({
       success: false,
       error: [
         {
-          msg: `Upload size exceeds total storage limit. ${formatBytes(user.storageQuotaBytes)} total`,
+          msg: `Upload size exceeds total storage limit. ${formatBytes(user.storageQuota)} total`,
         },
       ],
     });
