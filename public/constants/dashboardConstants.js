@@ -1,0 +1,5 @@
+const MAX_FILES_COUNT_PER_UPLOAD = 10;
+
+const VALID_CHARS_REGEX = /^[a-zA-Z0-9_\- ]+$/;
+
+export { MAX_FILES_COUNT_PER_UPLOAD, VALID_CHARS_REGEX };

@@ -8,6 +8,7 @@ async function getDirectoryWithChildren(id, userId) {
     },
     include: {
       children: true,
+      files: true,
     },
   });
 
@@ -23,19 +24,41 @@ async function getDirectoryWithChildren(id, userId) {
     throw error;
   }
 
+  const files = directory.files.filter((file) => !file.deletedAt);
+  directory.files = files;
+
   return directory;
+}
+
+/**
+ * Recursively collects the IDs of a directory and all its descendants.
+ *
+ * @param {string} rootId
+ * @returns {Promise<string[]>}
+ */
+async function collectSubtreeIds(rootId) {
+  const ids = [];
+  const queue = [rootId];
+
+  while (queue.length > 0) {
+    const currentId = queue.shift();
+    ids.push(currentId);
+
+    const children = await prisma.directory.findMany({
+      where: { parentId: currentId },
+      select: { id: true },
+    });
+
+    children.forEach((c) => queue.push(c.id));
+  }
+
+  return ids;
 }
 
 async function deleteDirectory(id, userId) {
   const directory = await prisma.directory.findUnique({
-    where: {
-      id,
-    },
-    select: {
-      id: true,
-      parentId: true,
-      userId: true,
-    },
+    where: { id },
+    select: { id: true, parentId: true, userId: true },
   });
 
   if (!directory) {
@@ -56,11 +79,20 @@ async function deleteDirectory(id, userId) {
     throw error;
   }
 
-  await prisma.directory.delete({
+  const subtreeIds = await collectSubtreeIds(id);
+
+  await prisma.file.updateMany({
     where: {
-      id,
+      directoryId: { in: subtreeIds },
+      deletedAt: null,
     },
+    data: { deletedAt: new Date() },
   });
+
+  const orderedIds = [...subtreeIds].reverse();
+  for (const dirId of orderedIds) {
+    await prisma.directory.delete({ where: { id: dirId } });
+  }
 
   return directory;
 }
@@ -168,7 +200,34 @@ async function getDirectoryBreadcrumbs(directoryId, userId) {
   return breadcrumbs;
 }
 
+async function canAllowFileUpload(userId, directoryId) {
+  const directory = await prisma.directory.findUnique({
+    where: {
+      id: directoryId,
+    },
+    select: {
+      id: true,
+      userId: true,
+    },
+  });
+
+  if (!directory) {
+    const error = new Error("Directory not found");
+    error.code = DIRECTORY_ERROR_CODES.DIRECTORY_NOT_FOUND;
+    throw error;
+  }
+
+  if (directory.userId !== userId) {
+    const error = new Error("You are not allowed access");
+    error.code = DIRECTORY_ERROR_CODES.DIRECTORY_ACCESS_DENIED;
+    throw error;
+  }
+
+  return true;
+}
+
 export {
+  canAllowFileUpload,
   getDirectoryWithChildren,
   getDirectoryBreadcrumbs,
   createDirectory,

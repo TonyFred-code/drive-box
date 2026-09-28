@@ -24,6 +24,21 @@ async function dashboardGet(req, res) {
     );
 
     let children = [...(currentDirectory.children || [])];
+    let files = [...(currentDirectory.files || [])];
+
+    files.sort((a, b) => {
+      let comparison = 0;
+      if (sortBy === "name") {
+        comparison = a.name.localeCompare(b.name, undefined, {
+          sensitivity: "base",
+        });
+      } else if (sortBy === "updatedAt") {
+        comparison = new Date(a.updatedAt) - new Date(b.updatedAt);
+      } else if (sortBy === "createdAt") {
+        comparison = new Date(a.createdAt) - new Date(b.createdAt);
+      }
+      return order === "desc" ? -comparison : comparison;
+    });
 
     children.sort((a, b) => {
       let comparison = 0;
@@ -45,12 +60,11 @@ async function dashboardGet(req, res) {
       return res.render("dashboard", {
         currentDirectory,
         children,
+        files,
         breadcrumbs,
         isRoot,
         sortBy,
         order,
-        currentDirectory,
-        directoryChildren: children,
       });
     }
 
@@ -59,6 +73,7 @@ async function dashboardGet(req, res) {
       data: {
         ...currentDirectory,
         children,
+        files,
         breadcrumbs,
         isRoot,
       },

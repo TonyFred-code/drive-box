@@ -1,230 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= isRoot ? "My Box" : currentDirectory.name %> - Drive Box</title>
-    <link rel="stylesheet" href="/shared.css" />
-    <script type="module" src="/pages/dashboard/main.js" defer></script>
-  </head>
-  <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col font-sans antialiased selection:bg-blue-500 selection:text-white">
-    <div class="dashboard__page-wrapper flex flex-col min-h-screen w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" id="root">
-      
-      <header class="flex items-center justify-between py-4 sm:py-6 border-b border-gray-200">
-        <a href="/dashboard" class="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg p-1">
-          <img src="/images/drive-box-logo-icon.svg" alt="Drive Box Logo" class="size-9 transition-transform group-hover:scale-105" />
-          <span class="text-xl font-bold tracking-tight text-gray-900">Drive Box</span>
-        </a>
 
-        <div class="relative">
-          <button
-            type="button"
-            id="profile-menu-btn"
-            aria-expanded="false"
-            aria-haspopup="true"
-            aria-label="User Profile"
-            class="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 border border-gray-300 cursor-pointer"
-          >
-            <img src="/images/user-profile-icon.svg" alt="" class="size-5 md:size-7" />
-            <span class="sr-only">Account details for <%= user.username %></span>
-          </button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= isRoot ? "My Box" : currentDirectory.name %> - Drive Box</title>
+  <link rel="stylesheet" href="/shared.css" />
+  <script type="module" src="/pages/dashboard/main.js" defer></script>
+</head>
 
-          <div
-            id="profile-dropdown"
-            class="hidden absolute right-0 mt-2 w-64 rounded-xl bg-white p-4 shadow-xl ring-1 ring-black/5 z-50 transition-all transform origin-top-right"
-          >
-            <div class="pb-3 border-b border-gray-100 mb-3">
-              <p class="font-semibold text-gray-900 truncate"><%= user.username %></p>
-              <p class="text-xs text-gray-500 truncate"><%= user.email %></p>
-            </div>
-            <div class="space-y-1">
-              <button
-                type="button"
-                id="view-storage-btn"
-                class="w-full text-left px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors cursor-pointer capitalize border border-gray-200"
-              >
-                Storage details
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col font-sans antialiased selection:bg-blue-500 selection:text-white">
+  <div class="dashboard__page-wrapper flex flex-col min-h-screen w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" id="root">
+
+    <header class="flex items-center justify-between py-4 sm:py-6 border-b border-gray-200">
+      <a href="/dashboard" class="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg p-1">
+        <img src="/images/drive-box-logo-icon.svg" alt="Drive Box Logo" class="size-9 transition-transform group-hover:scale-105" />
+        <span class="text-xl font-bold tracking-tight text-gray-900">Drive Box</span>
+      </a>
+
+      <div class="relative">
+        <button type="button" id="profile-menu-btn" aria-expanded="false" aria-haspopup="true" aria-label="User Profile" class="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 border border-gray-300 cursor-pointer">
+          <img src="/images/user-profile-icon.svg" alt="" class="size-5 md:size-7" />
+          <span class="sr-only">Account details for <%= user.username %></span>
+        </button>
+
+        <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-64 rounded-xl bg-white p-4 shadow-xl ring-1 ring-black/5 z-50 transition-all transform origin-top-right">
+          <div class="pb-3 border-b border-gray-100 mb-3">
+            <p class="font-semibold text-gray-900 truncate"><%= user.username %></p>
+            <p class="text-xs text-gray-500 truncate"><%= user.email %></p>
+          </div>
+          <div class="space-y-1">
+            <button type="button" id="view-storage-btn" class="w-full text-left px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors cursor-pointer capitalize border border-gray-200">
+              Storage details
+            </button>
+            <form action="/logout" method="post">
+              <button type="submit" class="w-full text-left px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors font-medium cursor-pointer capitalize border border-red-200">
+                Log Out
               </button>
-              <form action="/logout" method="post">
-                <button
-                  type="submit"
-                  class="w-full text-left px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors font-medium cursor-pointer capitalize border border-red-200"
-                >
-                  Log Out
-                </button>
-              </form>
-            </div>
+            </form>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
 
-      <main class="flex-1 flex flex-col py-6 sm:py-8">
+    <main class="flex-1 flex flex-col py-6 sm:py-8">
 
-      
-        <div class="mb-6 space-y-2">
-          <% if (breadcrumbs && breadcrumbs.length > 1) { %>
-           <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm text-gray-500">
-              <% breadcrumbs.forEach((crumb, index) => { %>
-                <% const isLast = index === breadcrumbs.length - 1; %>
-                <% const isFirst = index === 0; %>
-                <% if (isLast) { %>
-                  <span class="font-medium text-gray-800" aria-current="page"><%= crumb.name %></span>
-                <% } else if (isFirst) { %>
-                  <a
-                    href="/dashboard"
-                    class="hover:text-blue-600 transition-colors focus:outline-none focus:underline"
-                  >
-                    <%= crumb.name %>
-                  </a>
-                  <span class="text-gray-400">/</span>
-                <% } else { %>
-                  <a
-                    href="/dashboard?directoryId=<%= crumb.id %>"
-                    class="hover:text-blue-600 transition-colors focus:outline-none focus:underline"
-                  >
-                    <%= crumb.name %>
-                  </a>
-                  <span class="text-gray-400">/</span>
-                <% } %>
-              <% }) %>
-            </nav>
+
+      <div class="mb-6 space-y-2">
+        <% if (breadcrumbs && breadcrumbs.length > 1) { %>
+        <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm text-gray-500">
+          <% breadcrumbs.forEach((crumb, index) => { %>
+          <% const isLast = index === breadcrumbs.length - 1; %>
+          <% const isFirst = index === 0; %>
+          <% if (isLast) { %>
+          <span class="font-medium text-gray-800" aria-current="page"><%= crumb.name %></span>
+          <% } else if (isFirst) { %>
+          <a href="/dashboard" class="hover:text-blue-600 transition-colors focus:outline-none focus:underline">
+            <%= crumb.name %>
+          </a>
+          <span class="text-gray-400">/</span>
+          <% } else { %>
+          <a href="/dashboard?directoryId=<%= crumb.id %>" class="hover:text-blue-600 transition-colors focus:outline-none focus:underline">
+            <%= crumb.name %>
+          </a>
+          <span class="text-gray-400">/</span>
           <% } %>
+          <% }) %>
+        </nav>
+        <% } %>
 
-          <div class="flex items-center justify-between gap-4">
-              <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
-                <%= isRoot ? "My Box" : currentDirectory.name %>
-              </h1>
-            
-              <button
-              type="button"
-              id="open-page-menu-btn"
-              aria-label="Options"
-              class="p-2.5 rounded-xl border border-gray-300 hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-            >
-              <img src="/images/menu-icon.svg" alt="" class="size-6" />
+        <div class="flex items-center justify-between gap-4">
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
+            <%= isRoot ? "My Box" : currentDirectory.name %>
+          </h1>
+
+          <button type="button" id="open-page-menu-btn" aria-label="Options" class="p-2.5 rounded-xl border border-gray-300 hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer">
+            <img src="/images/menu-icon.svg" alt="" class="size-6" />
+          </button>
+        </div>
+      </div>
+
+      <!-- DIRECTORY VIEW AREA -->
+      <section class="flex-1 flex flex-col gap-3" id="directory-content">
+        <% if ((children && children.length > 0) || (files && files.length > 0)) { %>
+        <!-- POPULATED STATE -->
+        <div>
+          <button type="button" id="open-sort-btn" class=" inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer capitalize">
+            <svg class="size-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+            </svg>
+            <span>sort</span>
+          </button>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <% if (children && children.length > 0) { %>
+          <% children.forEach(child => { %>
+          <div class="folder-card group relative p-3.5 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all duration-150" data-id="<%= child.id %>" data-name="<%= child.name %>" data-created-at="<%= child.createdAt %>" data-updated-at="<%= child.updatedAt %>" data-tooltip="<%= child.name %>">
+            <a href="/dashboard?directoryId=<%= child.id %>" class="absolute inset-0 z-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Open folder <%= child.name %>"></a>
+
+            <div class="pointer-events-none">
+              <div class="flex items-center justify-center h-24 sm:h-28 rounded-xl bg-amber-50 group-hover:bg-amber-100/50 transition-colors">
+                <svg class="size-16 sm:size-20 text-amber-500 group-hover:text-amber-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                </svg>
+              </div>
+
+              <div class="flex items-center justify-between gap-1 pt-3 pr-8">
+                <span class="text-sm font-semibold text-gray-800 truncate flex-1 group-hover:text-blue-600">
+                  <%= child.name %>
+                </span>
+              </div>
+            </div>
+
+
+            <button type="button" class="item-menu-btn absolute bottom-3 right-3 z-20 p-1 text-gray-500 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer" aria-label="Folder actions for <%= child.name %>">
+              <svg class="size-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+              </svg>
+            </button>
+          </div>
+          <% }) %>
+          <% } %>
+          <% if (files && files.length > 0) { %>
+            <% files.forEach(file => { %>
+            <% const icon = getFileIcon(file.mimeType); %>
+              <div class="file-card group relative p-3.5 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all duration-150" data-id="<%= file.id %>" data-name="<%= file.name %>" data-created-at="<%= file.createdAt %>" data-updated-at="<%= file.updatedAt %>" data-tooltip="<%= file.name %>">
+                <a href="/files/<%= file.id %>/view" target="_blank" rel="noopener noreferrer" class="absolute inset-0 z-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Open file <%= file.name %>"></a>
+
+                <div class="pointer-events-none">
+                  <div class="flex items-center justify-center h-24 sm:h-28 rounded-xl <%= icon.bg %> transition-colors">
+                    <svg class="size-16 sm:size-20 <%= icon.color %> transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="<%= icon.path %>" />
+                    </svg>
+                  </div>
+
+                  <div class="flex items-center justify-between gap-1 pt-3 pr-8">
+                    <span class="text-sm font-semibold text-gray-800 truncate flex-1 group-hover:text-blue-600">
+                      <%= file.name %>
+                    </span>
+                  </div>
+                </div>
+
+
+                <button type="button" class="item-menu-btn absolute bottom-3 right-3 z-20 p-1 text-gray-500 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer" aria-label="File actions for <%= file.name %>">
+                  <svg class="size-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
+              </div>
+            <% }) %>
+            <% } %>
+        </div>
+
+        <% } else { %>
+
+        <!-- EMPTY STATE -->
+        <div class="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center">
+          <div class="p-4 rounded-full bg-blue-50 text-blue-500 mb-6">
+            <svg class="size-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h2 class="text-xl font-bold text-gray-800 mb-2">This box is empty</h2>
+          <p class="text-gray-500 text-sm max-w-sm mb-8">
+            Organize your items by creating folders or uploading documents into this directory.
+          </p>
+
+          <div class="flex flex-col items-center *:max-w-50 md:*:max-w-full md:flex-row gap-3 w-full max-w-xs md:max-w-lg *:cursor-pointer">
+            <button type="button" id="empty-new-folder-btn" class="w-full py-2.5 px-5 rounded-xl border-2 border-gray-800 text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-sm">
+              Create a new folder
+            </button>
+            <button type="button" id="empty-upload-btn" class="w-full py-2.5 px-5 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold hover:border-gray-800 hover:text-gray-900 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-sm">
+              File upload
             </button>
           </div>
         </div>
 
-        <!-- DIRECTORY VIEW AREA -->
-        <section class="flex-1 flex flex-col gap-3" id="directory-content">
-          <% if (directoryChildren && directoryChildren.length > 0) { %>
-            <!-- POPULATED STATE -->
-            <div>
-               <button
-                type="button"
-                id="open-sort-btn"
-                class=" inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer capitalize"
-              >
-                <svg class="size-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                </svg>
-                <span>sort</span>
-              </button>
-            </div>
-       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-  <% directoryChildren.forEach(child => { %>
-    <div
-      class="folder-card group relative p-3.5 rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all duration-150 "
-      data-id="<%= child.id %>"
-      data-name="<%= child.name %>"
-      data-created-at="<%= child.createdAt %>"
-      data-updated-at="<%= child.updatedAt %>"
-    >
-      <a
-        href="/dashboard?directoryId=<%= child.id %>"
-        class="absolute inset-0 z-10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-        aria-label="Open folder <%= child.name %>"
-      ></a>
+        <% } %>
+      </section>
+    </main>
 
-      <div class="pointer-events-none">
-        <div class="flex items-center justify-center h-24 sm:h-28 rounded-xl bg-gray-50 group-hover:bg-blue-50/50 transition-colors">
-          <svg class="size-16 sm:size-20 text-gray-600 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-          </svg>
-        </div>
-
-        <div class="flex items-center justify-between gap-1 pt-3 pr-8">
-          <span
-            class="text-sm font-semibold text-gray-800 truncate flex-1 group-hover:text-blue-600"
-            title="<%= child.name %>"
-          >
-            <%= child.name %>
-          </span>
-        </div>
-      </div>
-
-
-      <button
-        type="button"
-        class="item-menu-btn absolute bottom-3 right-3 z-20 p-1 text-gray-500 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
-        aria-label="Folder actions for <%= child.name %>"
-      >
-        <svg class="size-5" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-        </svg>
-      </button>
-    </div>
-  <% }) %>
-</div>
-
-          <% } else { %>
-
-            <!-- EMPTY STATE -->
-            <div class="flex-1 flex flex-col items-center justify-center py-16 px-4 text-center">
-              <div class="p-4 rounded-full bg-blue-50 text-blue-500 mb-6">
-                <svg class="size-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h2 class="text-xl font-bold text-gray-800 mb-2">This box is empty</h2>
-              <p class="text-gray-500 text-sm max-w-sm mb-8">
-                Organize your items by creating folders or uploading documents into this directory.
-              </p>
-
-              <div class="flex flex-col items-center *:max-w-50 md:*:max-w-full md:flex-row gap-3 w-full max-w-xs md:max-w-lg *:cursor-pointer">
-                <button
-                  type="button"
-                  id="empty-new-folder-btn"
-                  class="w-full py-2.5 px-5 rounded-xl border-2 border-gray-800 text-gray-900 font-semibold hover:bg-gray-900 hover:text-white transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-sm"
-                >
-                  Create a new folder
-                </button>
-                <button
-                  type="button"
-                  id="empty-upload-btn"
-                  class="w-full py-2.5 px-5 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold hover:border-gray-800 hover:text-gray-900 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-sm"
-                >
-                  File upload
-                </button>
-              </div>
-            </div>
-
-          <% } %>
-        </section>
-      </main>
-      
-      <!-- DIALOGS -->
+    <!-- DIALOGS -->
 
     <dialog id="dialog-new-folder" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
       <form id="new-folder-form" class="p-6 flex flex-col gap-4">
         <h3 class="text-lg font-bold text-gray-900 capitalize">New folder</h3>
-        
+
         <div class="flex flex-col gap-1.5">
           <div id="new-folder-error" class="hidden text-xs text-red-600 font-medium px-2 py-1 rounded bg-red-50 border border-red-200">
             Folder name cannot be empty
           </div>
-          <input
-            type="text"
-            id="new-folder-name-input"
-            name="name"
-            maxlength="32"
-            value="Untitled folder"
-            autocomplete="off"
-            placeholder="Folder name"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-all"
-            required
-          />
+          <input type="text" id="new-folder-name-input" name="name" maxlength="32" value="Untitled folder" autocomplete="off" placeholder="Folder name" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-all" required />
           <div class="flex justify-between text-xs text-gray-400 px-1">
             <span>Avoid / \ : * ? " &lt; &gt; |</span>
             <span id="new-folder-char-count">15/32</span>
@@ -232,17 +198,10 @@
         </div>
 
         <div class="flex items-center justify-end gap-2.5 pt-2 *:capitalize *:cursor-pointer">
-          <button
-            type="button"
-            class="dialog-cancel-btn px-4 py-2 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 transition-colors"
-          >
+          <button type="button" class="dialog-cancel-btn px-4 py-2 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 transition-colors">
             cancel
           </button>
-          <button
-            type="submit"
-            id="new-folder-submit-btn"
-            class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <button type="submit" id="new-folder-submit-btn" class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             create
           </button>
         </div>
@@ -258,15 +217,7 @@
           <div id="rename-folder-error" class="hidden text-xs text-red-600 font-medium px-2 py-1 rounded bg-red-50 border border-red-200">
             Folder name cannot be empty
           </div>
-          <input
-            type="text"
-            id="rename-folder-name-input"
-            name="name"
-            maxlength="32"
-            autocomplete="off"
-            class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-all"
-            required
-          />
+          <input type="text" id="rename-folder-name-input" name="name" maxlength="32" autocomplete="off" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-all" required />
           <div class="flex justify-between text-xs text-gray-400 px-1">
             <span>Max 32 characters</span>
             <span id="rename-folder-char-count">0/32</span>
@@ -274,16 +225,10 @@
         </div>
 
         <div class="flex items-center justify-end gap-2.5 pt-2 capitalize">
-          <button
-            type="button"
-            class="dialog-cancel-btn px-4 py-2 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 transition-colors"
-          >
+          <button type="button" class="dialog-cancel-btn px-4 py-2 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 transition-colors">
             cancel
           </button>
-          <button
-            type="submit"
-            class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-          >
+          <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors">
             update
           </button>
         </div>
@@ -298,18 +243,11 @@
           Are you sure you want to delete this folder? All of its contents will be permanently deleted.
         </p>
 
-        <div class="flex items-center justify-end gap-2.5 pt-2 capitalize">
-          <button
-            type="button"
-            class="dialog-cancel-btn px-4 py-2 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 transition-colors"
-          >
+        <div class="flex items-center justify-end gap-2.5 pt-2 *:capitalize *:cursor-pointer">
+          <button type="button" class="dialog-cancel-btn px-4 py-2 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 transition-colors">
             cancel
           </button>
-          <button
-            type="button"
-            id="confirm-delete-folder-btn"
-            class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition-colors"
-          >
+          <button type="button" id="confirm-delete-folder-btn" class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors disabled:cursor-not-allowed disabled:opacity-50">
             delete
           </button>
         </div>
@@ -318,17 +256,14 @@
 
     <dialog id="dialog-details" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-md w-10/12 fixed inset-0 m-auto">
       <div class="p-6 flex flex-col gap-5">
-        <h3 class="text-xl font-bold text-gray-900 text-center">Details</h3>
-        
+        <h3 class="text-xl font-bold text-gray-900 text-center">Folder Details</h3>
+
         <div class="space-y-4 text-sm" id="details-content">
           <!-- Dynamic details filled by script (main.js) -->
         </div>
 
         <div class="pt-2 flex justify-end">
-          <button
-            type="button"
-            class="dialog-cancel-btn w-full sm:w-auto px-6 py-2 rounded-xl text-sm font-semibold text-gray-800 hover:bg-gray-100 border border-gray-300 transition-colors"
-          >
+          <button type="button" class="dialog-cancel-btn w-full sm:w-auto px-6 py-2 rounded-xl text-sm font-semibold text-gray-800 hover:bg-gray-100 border border-gray-300 transition-colors">
             close
           </button>
         </div>
@@ -372,16 +307,10 @@
         </div>
 
         <div class="flex items-center justify-end gap-2.5 pt-2">
-          <button
-            type="button"
-            class="dialog-cancel-btn px-4 py-2 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 transition-colors cursor-pointer"
-          >
+          <button type="button" class="dialog-cancel-btn px-4 py-2 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 transition-colors cursor-pointer">
             Cancel
           </button>
-          <button
-            type="submit"
-            class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer"
-          >
+          <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer">
             Apply
           </button>
         </div>
@@ -390,104 +319,260 @@
 
     <dialog id="dialog-page-menu" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-xs w-10/12 fixed inset-0 m-auto">
       <div class="p-4 flex flex-col gap-1">
-        <button
-          type="button"
-          id="menu-create-folder-btn"
-          class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer"
-        >
+        <button type="button" id="menu-create-folder-btn" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer">
           Create a new folder
         </button>
-        <button
-          type="button"
-          id="menu-upload-btn"
-          class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer"
-        >
+        <button type="button" id="menu-upload-btn" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer">
           File upload
         </button>
 
         <% if (!isRoot) { %>
-          <button
-            type="button"
-            id="menu-rename-current-btn"
-            class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer"
-          > 
-            Edit folder
-          </button>
-          <button
-            type="button"
-            id="menu-delete-current-btn"
-            class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-          >
-            Delete folder
-          </button>
+        <button type="button" id="menu-rename-current-btn" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer">
+          Edit folder
+        </button>
+        <button type="button" id="menu-delete-current-btn" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer">
+          Delete folder
+        </button>
         <% } %>
 
-        <button
-          type="button"
-          id="menu-current-details-btn"
-          class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-gray-800 hover:bg-gray-100 transition-colors border-t border-gray-100 mt-1 pt-2 cursor-pointer"
-        >
+        <button type="button" id="menu-current-details-btn" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-gray-800 hover:bg-gray-100 transition-colors border-t border-gray-100 mt-1 pt-2 cursor-pointer">
           Folder details
         </button>
 
-        <button
-          type="button"
-          class="dialog-cancel-btn w-full mt-2 py-2 text-center text-xs text-gray-400 hover:text-gray-600 cursor-pointer"
-        >
+        <button type="button" class="dialog-cancel-btn w-full mt-2 py-2 text-center text-xs text-gray-400 hover:text-gray-600 cursor-pointer">
           Close
         </button>
       </div>
     </dialog>
 
+    <dialog id="dialog-upload" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
+      <form id="upload-form" class="p-6 flex flex-col gap-5" enctype="multipart/form-data">
+        <h3 class="text-lg font-bold text-gray-900">File upload</h3>
+        <div class="flex justify-center items-center">
+
+          <input type="file" id="file-upload-input" name="files" class="hidden" multiple />
+
+          <label for="file-upload-input" class="upload-label p-6 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors">
+            <span class="text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <title>Upload</title>
+                <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                <path d="M12 4v12" />
+                <path d="M8 8l4-4 4 4" />
+              </svg>
+
+              <span class="font-semibold text-sm">Choose Files or Drag & Drop</span>
+            </span>
+          </label>
+
+        </div>
+
+        <div id="selected-files-list" class="hidden space-y-2">
+          <div id="selected-files-overview">
+
+          </div>
+          <div class="flex justify-end pt-2">
+            <button type="button" id="view-selected-files-btn" class="px-5 py-2 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer">
+              View selected files
+            </button>
+          </div>
+        </div>
+        <div class="flex *:capitalize gap-2 justify-end pt-2">
+          <button type="button" class="dialog-cancel-btn px-5 py-2 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button type="submit" id="upload-btn" class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-colors cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed ">
+            Upload
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dialog-selected-files" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
+      <div class="p-4 flex flex-col gap-5">
+        <h3 class="text-lg font-bold text-gray-900">Selected files</h3>
+
+        <div id="selected-files-details" class="space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
+
+        </div>
+        <div class="flex gap-2 justify-end pt-2">
+          <button type="button" class="dialog-cancel-btn px-5 py-2 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer">
+            Back
+          </button>
+          <button type="button" id="remove-all-files-btn" class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors cursor-pointer">
+            Remove all
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="dialog-upload-error" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
+      <div class="p-4 flex flex-col gap-5">
+        <h3 class="text-lg font-bold text-gray-900">Upload failed</h3>
+        <p id="upload-error-msg" class="text-gray-600 italic text-sm" ></p>
+
+        <div id="upload-error-details" class="space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
+
+        </div>
+        <div class="flex gap-2 justify-end pt-2">
+          <button type="button" class="dialog-cancel-btn px-5 py-2 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer">
+            Close
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Mixed results: some succeeded, some failed -->
+    <dialog id="dialog-upload-results" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
+      <div class="p-5 flex flex-col gap-5">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">Upload results</h3>
+          <p id="upload-results-summary" class="text-sm text-gray-500 mt-0.5"></p>
+        </div>
+
+        <!-- Succeeded section -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-green-700 mb-2">Succeeded</p>
+          <ul id="upload-results-stored" class="space-y-1 max-h-36 overflow-y-auto text-sm text-gray-700"></ul>
+        </div>
+
+        <!-- Failed section -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-red-600 mb-2">Failed</p>
+          <ul id="upload-results-failed" class="space-y-1 max-h-36 overflow-y-auto text-sm text-gray-700"></ul>
+        </div>
+
+        <div class="flex gap-2 justify-end pt-1">
+          <button type="button" id="upload-results-close-btn" class="dialog-cancel-btn px-5 py-2 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer">
+            Close
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="dialog-delete-file" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
+      <div class="p-5 flex flex-col gap-5">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">Delete file</h3>
+          <p id="delete-file-summary" class="text-sm text-gray-500 mt-0.5"></p>
+        </div>
+        <div class="flex gap-2 justify-end pt-1">
+          <button type="button" class="dialog-cancel-btn px-5 py-2 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button type="button" id="delete-file-btn" class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50">
+            Delete
+          </button>
+        </div>
+      </div>
+    </dialog>
+    
+    <dialog id="dialog-file-details" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
+      <div class="p-5 flex flex-col gap-5">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">File details</h3>
+          <div id="file-details" class="text-sm my-2">
+            <!-- File details will be filled by script (main.js) -->
+          </div>
+        </div>
+        <div class="flex gap-2 justify-end pt-1">
+          <button type="button" class="dialog-cancel-btn px-5 py-2 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer">
+            Close
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="dialog-rename-file" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
+      <form id="rename-file-form" class="p-6 flex flex-col gap-4">
+        <h3 class="text-lg font-bold text-gray-900 capitalize">rename file</h3>
+        <input type="hidden" id="rename-file-id" />
+        <input type="hidden" id="file-full-name">
+
+        <div class="flex flex-col gap-1.5">
+          <div id="rename-file-error" class="hidden text-xs text-red-600 font-medium px-2 py-1 rounded bg-red-50 border border-red-200">
+            File name cannot be empty
+          </div>
+         <div class="flex">
+           <input type="text" id="rename-file-name-input" name="name" maxlength="32" autocomplete="off" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none text-sm transition-all" required />
+           <span id="rename-file-extension" class="ml-2 inline-flex items-center">.txt</span>
+         </div>
+          <div class="flex justify-between text-xs text-gray-400 px-1">
+            <span>Max 32 characters</span>
+            <span id="rename-file-char-count">0/32</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 pt-2 capitalize">
+          <button type="button" class="dialog-cancel-btn px-4 py-2 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-100 border border-gray-300 transition-colors">
+            cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+            update
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+  </div>
+
+  <div id="folder-context-menu" class="hidden fixed z-50 w-44 rounded-xl bg-white shadow-xl ring-1 ring-black/10 py-1.5 text-sm transform origin-top-left transition-all">
+    <a href="#" id="ctx-open-folder" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2 font-medium">
+      <span>Open</span>
+    </a>
+    <button type="button" id="ctx-rename" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+      <span>Rename</span>
+    </button>
+    <button type="button" id="ctx-details" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+      <span>Details</span>
+    </button>
+    <div class="my-1 border-t border-gray-100"></div>
+    <button type="button" id="ctx-delete" class="w-full cursor-pointer text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium">
+      <span>Delete</span>
+    </button>
+  </div>
+
+  <div id="file-context-menu" class="hidden fixed z-50 w-44 rounded-xl bg-white shadow-xl ring-1 ring-black/10 py-1.5 text-sm transform origin-top-left transition-all">
+    <div class="relative group/view">
+      <a href="#" id="ctx-view" target="_blank" rel="noopener noreferrer" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2 font-medium">
+        <span>View</span>
+      </a>
+      <div class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 rounded-lg bg-gray-900 px-3 py-1.5 text-center text-xs text-white shadow-lg opacity-0 group-hover/view:opacity-100 transition-opacity duration-150 z-50">
+        Link expires after 24 hours
+        <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+      </div>
     </div>
-
-    <div
-      id="folder-context-menu"
-      class="hidden fixed z-50 w-44 rounded-xl bg-white shadow-xl ring-1 ring-black/10 py-1.5 text-sm transform origin-top-left transition-all"
-    >
-      <button
-        type="button"
-        id="ctx-open"
-        class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2 font-medium"
-      >
-        <span>Open</span>
-      </button>
-      <button
-        type="button"
-        id="ctx-rename"
-        class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-      >
-        <span>Rename</span>
-      </button>
-      <button
-        type="button"
-        id="ctx-details"
-        class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-      >
-        <span>Details</span>
-      </button>
-      <div class="my-1 border-t border-gray-100"></div>
-      <button
-        type="button"
-        id="ctx-delete"
-        class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium"
-      >
-        <span>Delete</span>
-      </button>
+    <div class="relative group/dl">
+      <a href="#" id="ctx-download" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2 font-medium">
+        <span>Download</span>
+      </a>
+      <div class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 rounded-lg bg-gray-900 px-3 py-1.5 text-center text-xs text-white shadow-lg opacity-0 group-hover/dl:opacity-100 transition-opacity duration-150 z-50">
+        Link expires after 24 hours
+        <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+      </div>
     </div>
+    <button type="button" id="ctx-rename-file" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+      <span>Rename</span>
+    </button>
+    <button type="button" id="ctx-file-details" class="w-full cursor-pointer text-left px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+      <span>Details</span>
+    </button>
+    <div class="my-1 border-t border-gray-100"></div>
+    <button type="button" id="ctx-delete-file" class="w-full cursor-pointer text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium">
+      <span>Delete</span>
+    </button>
+  </div>
 
-    <!-- Hidden file input for upload demonstration -->
-    <input type="file" id="file-upload-input" class="hidden" multiple />
-
-    <!-- EMBEDDED DASHBOARD DATA FOR CLIENT SCRIPT -->
-    <script id="dashboard-data" type="application/json">
-      <%- JSON.stringify({
+  <!-- EMBEDDED DASHBOARD DATA FOR CLIENT SCRIPT -->
+  <script id="dashboard-data" type="application/json">
+    <%- JSON.stringify({
         currentDirectory,
-        directoryChildren: directoryChildren || [],
+        children: children || [],
         breadcrumbs: breadcrumbs || [],
         isRoot,
         sortBy,
         order,
+        files: files || [],
         user: {
           id: user.id,
           username: user.username,
@@ -495,6 +580,7 @@
           rootDirectoryId: user.rootDirectoryId
         }
       }).replace(/</g, "\u003c").replace(/>/g, "\u003e"); %>
-    </script>
-  </body>
+  </script>
+</body>
+
 </html>

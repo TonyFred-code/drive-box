@@ -13,6 +13,12 @@ import { logoutRouter } from "./routes/logout.route.js";
 import { loginRouter } from "./routes/login.route.js";
 import { directoryRouter } from "./routes/directory.route.js";
 import { attachUserLocals } from "./middleware/responseModifiers.js";
+import { fileRouter } from "./routes/file.route.js";
+import {
+  notFoundMiddleware,
+  serverErrorMiddleware,
+} from "./middleware/errorMiddleware.js";
+import { startStorageSweep } from "./lib/storageSweep.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,11 +64,19 @@ app.use(passport.session());
 app.use(attachUserLocals);
 
 // ROUTES
+app.use("/files", fileRouter);
 app.use("/directories", directoryRouter);
 app.use("/login", loginRouter);
 app.use("/logout", logoutRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/register", registerRouter);
 app.use("/", indexRouter);
+
+app.use(notFoundMiddleware);
+
+app.use(serverErrorMiddleware);
+
+// Start background sweep for soft-deleted file storage objects
+startStorageSweep();
 
 export { app };
