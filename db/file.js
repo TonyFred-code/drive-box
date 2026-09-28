@@ -66,7 +66,7 @@ async function getUserStorageUsed(userId) {
 async function softDeleteFile(fileId, userId) {
   const file = await prisma.file.findFirst({
     where: { id: fileId },
-    select: { userId: true, storagePath: true },
+    select: { userId: true, storagePath: true, deletedAt: true },
   });
 
   if (!file) {
@@ -78,6 +78,12 @@ async function softDeleteFile(fileId, userId) {
   if (file.userId !== userId) {
     const error = new Error("You are not authorized to delete this file");
     error.code = FILE_ERROR_CODES.UNAUTHORIZED;
+    throw error;
+  }
+
+  if (file.deletedAt) {
+    const error = new Error("File is already deleted");
+    error.code = FILE_ERROR_CODES.FILE_ALREADY_DELETED;
     throw error;
   }
 

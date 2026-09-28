@@ -266,6 +266,7 @@ async function deleteFile(req, res) {
   } catch (error) {
     let msg = "Failed to delete file";
     let status = 500;
+    let success = false;
     if (error.code === FILE_ERROR_CODES.FILE_NOT_FOUND) {
       msg = "File not found";
       status = 404;
@@ -275,9 +276,16 @@ async function deleteFile(req, res) {
     } else if (error.code === USER_ERROR_CODES.STORAGE_DECREMENT_FAILED) {
       msg = "Failed to update storage used";
       status = 500;
+    } else if (error.code === FILE_ERROR_CODES.FILE_ALREADY_DELETED) {
+      success = true;
     }
 
-    return res.status(status).json({ success: false, error: [{ msg }] });
+    if (success) {
+      // to ensure idempotency
+      return res.json({ success, msg: "File already deleted" });
+    }
+
+    return res.status(status).json({ success, error: [{ msg }] });
   }
 }
 
