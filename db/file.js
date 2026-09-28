@@ -174,6 +174,36 @@ async function getFilesStats(directoryIds, userId) {
   };
 }
 
+async function multiSoftDeleteFilesByDirectoryId(directoryIds, userId) {
+  const filesToDelete = await prisma.file.findMany({
+    where: {
+      directoryId: {
+        in: directoryIds,
+      },
+      userId,
+      deletedAt: null,
+    },
+    select: {
+      size: true,
+    },
+  });
+
+  await prisma.file.updateMany({
+    where: {
+      directoryId: {
+        in: directoryIds,
+      },
+      userId,
+      deletedAt: null,
+    },
+    data: {
+      deletedAt: new Date(),
+    },
+  });
+
+  return filesToDelete;
+}
+
 export {
   createFilePlaceholder,
   updateFileStorageDetails,
@@ -183,4 +213,5 @@ export {
   updateFileName,
   getUserStorageUsed,
   getFilesStats,
+  multiSoftDeleteFilesByDirectoryId,
 };

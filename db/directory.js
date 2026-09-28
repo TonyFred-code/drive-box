@@ -1,4 +1,5 @@
 import { DIRECTORY_ERROR_CODES } from "../constants/errorCodes.js";
+import { multiSoftDeleteFilesByDirectoryId } from "./file.js";
 import { prisma } from "./prisma.js";
 import { decrementUserStorageUsed } from "./user.js";
 
@@ -82,16 +83,10 @@ async function deleteDirectory(id, userId) {
 
   const subtreeIds = await collectSubtreeIds(id);
 
-  const softDeletedFiles = await prisma.file.updateMany({
-    where: {
-      directoryId: { in: subtreeIds },
-      deletedAt: null,
-    },
-    data: { deletedAt: new Date() },
-    select: {
-      size: true,
-    },
-  });
+  const softDeletedFiles = await multiSoftDeleteFilesByDirectoryId(
+    subtreeIds,
+    userId
+  );
 
   const softDeletedFilesSize = softDeletedFiles.reduce(
     (acc, file) => acc + file.size,
