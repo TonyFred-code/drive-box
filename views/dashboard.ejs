@@ -577,7 +577,9 @@
           id: user.id,
           username: user.username,
           email: user.email,
-          rootDirectoryId: user.rootDirectoryId
+          rootDirectoryId: user.rootDirectoryId,
+          storageQuota: user.storageQuota,
+          storageUsed: user.storageUsed
         }
       }).replace(/</g, "\u003c").replace(/>/g, "\u003e"); %>
   </script>

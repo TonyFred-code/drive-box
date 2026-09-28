@@ -29,6 +29,9 @@ model User {
   rootDirectory   Directory?  @relation("UserRoot", fields: [rootDirectoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   createdAt       DateTime    @default(now())
   files           File[]      @relation("UserFiles")
+
+  storageQuota Int @default(33554432) // 32 MB in bytes
+  storageUsed  Int @default(0)
 }
 
 model Directory {

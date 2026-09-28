@@ -1,5 +1,6 @@
 import { DIRECTORY_ERROR_CODES } from "../constants/errorCodes.js";
 import { prisma } from "./prisma.js";
+import { decrementUserStorageUsed } from "./user.js";
 
 async function getDirectoryWithChildren(id, userId) {
   const directory = await prisma.directory.findUnique({
@@ -81,13 +82,22 @@ async function deleteDirectory(id, userId) {
 
   const subtreeIds = await collectSubtreeIds(id);
 
-  await prisma.file.updateMany({
+  const softDeletedFiles = await prisma.file.updateMany({
     where: {
       directoryId: { in: subtreeIds },
       deletedAt: null,
     },
     data: { deletedAt: new Date() },
+    select: {
+      size: true,
+    },
   });
+
+  const softDeletedFilesSize = softDeletedFiles.reduce(
+    (acc, file) => acc + file.size,
+    0
+  );
+  await decrementUserStorageUsed(userId, softDeletedFilesSize);
 
   const orderedIds = [...subtreeIds].reverse();
   for (const dirId of orderedIds) {

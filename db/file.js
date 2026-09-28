@@ -46,6 +46,20 @@ async function updateFileStorageDetails(fileId, storagePath) {
 }
 
 /**
+ * Retrieves the total storage used by a specific user in bytes.
+ * @param {string} userId The ID of the user.
+ * @returns {Promise<number>} The total storage used by the user in bytes.
+ */
+async function getUserStorageUsed(userId) {
+  const result = await prisma.file.aggregate({
+    where: { userId, deletedAt: null },
+    _sum: { size: true },
+  });
+
+  return result._sum.size || 0;
+}
+
+/**
  * Soft deletes a file (sets deletedAt). Returns full record so caller can
  * use storagePath to remove the object from Supabase Storage.
  */
@@ -153,4 +167,5 @@ export {
   deleteFile,
   getFileForUser,
   updateFileName,
+  getUserStorageUsed,
 };

@@ -1,5 +1,5 @@
-import { formatDate } from "../../lib/dashboardUtils.js";
-import { breadcrumbs, currentDirectory, isRoot } from "./serverData.js";
+import { formatBytes, formatDate } from "../../lib/dashboardUtils.js";
+import { breadcrumbs, currentDirectory, isRoot, user } from "./serverData.js";
 import { uiState } from "./uiState.js";
 
 const detailsDialog = document.getElementById("dialog-details");
@@ -60,6 +60,10 @@ function showFolderDetails(folder) {
 }
 
 function showRootDetails() {
+  const usedStorage = user.storageUsed;
+  const availableStorage = user.storageQuota - user.storageUsed;
+  const usedStoragePercent = (usedStorage / user.storageQuota) * 100;
+
   detailsContent.innerHTML = `
     <div class="space-y-4">
       <h4 class="font-bold text-lg text-gray-900 border-b border-gray-100 pb-2">My Box</h4>
@@ -67,10 +71,10 @@ function showRootDetails() {
       <div class="space-y-1.5 bg-gray-50 p-3.5 rounded-xl border border-gray-200">
         <div class="flex justify-between text-xs font-semibold text-gray-600">
           <span>Storage</span>
-          <span>18% (46MB of 256MB used)</span>
+          <span>${usedStoragePercent.toFixed(0)}% (${formatBytes(user.storageUsed)} of ${formatBytes(user.storageQuota)} used)</span>
         </div>
         <div class="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
-          <div class="storage-progress-bar h-full bg-emerald-500 rounded-full" style="width: 18%"></div>
+          <div class="storage-progress-bar h-full bg-emerald-500 rounded-full" style="width: ${usedStoragePercent.toFixed(0)}%"></div>
         </div>
       </div>
 

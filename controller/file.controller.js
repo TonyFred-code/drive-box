@@ -3,6 +3,7 @@ import {
   FILE_ERROR_CODES,
   PRISMA_ERROR_CODES,
   SUPABASE_ERROR_CODES,
+  USER_ERROR_CODES,
 } from "../constants/errorCodes.js";
 import {
   createFilePlaceholder,
@@ -21,13 +22,19 @@ import {
 import path from "path";
 import {
   extractFileNameWithoutExt,
+  formatBytes,
   validateFileDisplayName,
 } from "../lib/fileUtils.js";
+import {
+  decrementUserStorageUsed,
+  incrementUserStorageUsed,
+} from "../db/user.js";
 
 async function uploadMultipleFiles(req, res) {
   const files = req.files;
   const { directoryId } = req.body;
-  const userId = req.user.id;
+  const user = req.user;
+  const userId = user.id;
 
   try {
     await canAllowFileUpload(userId, directoryId);
@@ -44,6 +51,31 @@ async function uploadMultipleFiles(req, res) {
     }
 
     return res.status(status).json({ success: false, error: [{ msg }] });
+  }
+
+  const uploadFileSize = files.reduce((acc, file) => acc + file.size, 0);
+  if (uploadFileSize > user.storageQuotaBytes) {
+    return res.status(400).json({
+      success: false,
+      error: [
+        {
+          msg: `Upload size exceeds total storage limit. ${formatBytes(user.storageQuotaBytes)} total`,
+        },
+      ],
+    });
+  }
+
+  const userFreeStorage = user.storageQuota - user.storageUsed;
+
+  if (uploadFileSize > userFreeStorage) {
+    return res.status(400).json({
+      success: false,
+      error: [
+        {
+          msg: `Upload size exceeds available storage. ${formatBytes(userFreeStorage)} available`,
+        },
+      ],
+    });
   }
 
   const placeholders = [];
@@ -98,17 +130,21 @@ async function uploadMultipleFiles(req, res) {
 
       try {
         await updateFileStorageDetails(dbId, storagePath);
+        await incrementUserStorageUsed(userId, file.size);
       } catch (error) {
-        console.error(
-          `[upload] Failed to update file storage details for "${file.originalname}" (id: ${dbId}):`,
-          error
-        );
-        await deleteFromStorage(storagePath).catch((cleanupError) => {
+        if (error.code === USER_ERROR_CODES.STORAGE_INCREMENT_FAILED) {
+        } else {
           console.error(
-            `[storage] Failed to prune storage object for "${file.originalname}" (id: ${dbId}):`,
-            cleanupError
+            `[upload] Failed to update file storage details for "${file.originalname}" (id: ${dbId}):`,
+            error
           );
-        });
+          await deleteFromStorage(storagePath).catch((cleanupError) => {
+            console.error(
+              `[storage] Failed to prune storage object for "${file.originalname}" (id: ${dbId}):`,
+              cleanupError
+            );
+          });
+        }
         throw error;
       }
       return { originalName: file.originalname, dbId };
@@ -218,6 +254,7 @@ async function deleteFile(req, res) {
 
   try {
     const deletedFile = await softDeleteFile(fileId, userId);
+    await decrementUserStorageUsed(userId, deletedFile.size);
     // log but don't fail the request if it errors
     await deleteFromStorage(deletedFile.storagePath).catch((err) =>
       console.error(
@@ -235,7 +272,11 @@ async function deleteFile(req, res) {
     } else if (error.code === FILE_ERROR_CODES.UNAUTHORIZED) {
       msg = "Unauthorized to delete file";
       status = 403;
+    } else if (error.code === USER_ERROR_CODES.STORAGE_DECREMENT_FAILED) {
+      msg = "Failed to update storage used";
+      status = 500;
     }
+
     return res.status(status).json({ success: false, error: [{ msg }] });
   }
 }
