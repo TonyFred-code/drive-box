@@ -87,7 +87,7 @@ async function dashboardGet(req, res) {
         breadcrumbs,
         isRoot,
         directoryStats: {
-          fileCount: filesStats.count,
+          fileCount: filesStats.fileCount,
           folderCount: subtreeIds.length - 1,
           totalSize: filesStats.totalSize,
         },
