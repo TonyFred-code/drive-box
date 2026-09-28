@@ -37,7 +37,7 @@ model Directory {
   userId    String      @db.Uuid
   user      User        @relation("UserDirectories", fields: [userId], references: [id], onDelete: Cascade)
   parentId  String?     @db.Uuid
-  parent    Directory?  @relation("SubDirectories", fields: [parentId], references: [id], onDelete: Cascade)
+  parent    Directory?  @relation("SubDirectories", fields: [parentId], references: [id], onDelete: Restrict)
   children  Directory[] @relation("SubDirectories")
   createdAt DateTime    @default(now())
   updatedAt DateTime    @default(now()) @updatedAt
@@ -55,7 +55,7 @@ model File {
   user   User   @relation("UserFiles", fields: [userId], references: [id])
 
   directoryId String?    @db.Uuid
-  directory   Directory? @relation("DirectoryFiles", fields: [directoryId], references: [id], onDelete: Cascade)
+  directory   Directory? @relation("DirectoryFiles", fields: [directoryId], references: [id], onDelete: SetNull)
 
   name         String @db.VarChar(32)
   originalName String

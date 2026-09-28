@@ -18,6 +18,7 @@ import {
   notFoundMiddleware,
   serverErrorMiddleware,
 } from "./middleware/errorMiddleware.js";
+import { startStorageSweep } from "./lib/storageSweep.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -74,5 +75,8 @@ app.use("/", indexRouter);
 app.use(notFoundMiddleware);
 
 app.use(serverErrorMiddleware);
+
+// Start background sweep for soft-deleted file storage objects
+startStorageSweep();
 
 export { app };
