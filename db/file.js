@@ -84,7 +84,7 @@ async function softDeleteFile(fileId, userId) {
   return prisma.file.update({
     where: { id: fileId },
     data: { deletedAt: new Date() },
-    select: { id: true, storagePath: true },
+    select: { id: true, storagePath: true, size: true },
   });
 }
 
