@@ -26,6 +26,9 @@ async function handleFileDeletion(fileId) {
     window.location.reload();
   } catch (error) {
     console.error("Error deleting file:", error);
+  } finally {
+    deleteFileBtn.disabled = false;
+    deleteFileBtn.textContent = "Retry";
   }
 }
 
