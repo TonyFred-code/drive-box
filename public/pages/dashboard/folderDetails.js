@@ -1,5 +1,13 @@
 import { formatBytes, formatDate } from "../../lib/dashboardUtils.js";
-import { breadcrumbs, currentDirectory, isRoot, user } from "./serverData.js";
+import {
+  breadcrumbs,
+  children,
+  currentDirectory,
+  directoryStats,
+  files,
+  isRoot,
+  user,
+} from "./serverData.js";
 import { uiState } from "./uiState.js";
 
 const detailsDialog = document.getElementById("dialog-details");
@@ -14,6 +22,16 @@ const menuCurrentDetailsBtn = document.getElementById(
 );
 
 function showFolderDetails(folder) {
+  const folderCount = directoryStats.folderCount;
+  const fileCount = directoryStats.fileCount;
+  const totalSize = directoryStats.totalSize;
+
+  const statsHtml = `<span class="text-gray-800 font-medium">
+        ${fileCount} file${fileCount !== 1 ? "s" : ""},
+        ${folderCount} folder${folderCount !== 1 ? "s" : ""},
+        ${formatBytes(totalSize)}
+       </span>`;
+
   const parentBreadCrumbs =
     folder.id === currentDirectory.id
       ? breadcrumbs.slice(0, breadcrumbs.length - 1)
@@ -35,7 +53,7 @@ function showFolderDetails(folder) {
         </div>
         <div>
           <span class="block text-gray-400 uppercase font-semibold">Statistics</span>
-          <span class="text-gray-800 font-medium">Directory item</span>
+        ${statsHtml}
         </div>
       </div>
 
@@ -60,6 +78,16 @@ function showFolderDetails(folder) {
 }
 
 function showRootDetails() {
+  const folderCount = directoryStats.folderCount;
+  const fileCount = directoryStats.fileCount;
+  const totalSize = directoryStats.totalSize;
+
+  const statsHtml = `<span class="text-gray-800 font-medium">
+        ${fileCount} file${fileCount !== 1 ? "s" : ""},
+        ${folderCount} folder${folderCount !== 1 ? "s" : ""},
+        ${formatBytes(totalSize)}
+       </span>`;
+
   const usedStorage = user.storageUsed;
   const availableStorage = user.storageQuota - user.storageUsed;
   const usedStoragePercent = (usedStorage / user.storageQuota) * 100;
@@ -77,6 +105,16 @@ function showRootDetails() {
           <div class="storage-progress-bar h-full bg-emerald-500 rounded-full" style="width: ${usedStoragePercent.toFixed(0)}%"></div>
         </div>
       </div>
+
+      <hr class="border-gray-200" />
+
+      <div>
+        <span class="block text-gray-400 uppercase font-semibold">Statistics</span>
+        ${statsHtml}
+      </div>
+
+      <hr class="border-gray-200" />
+
 
       <div class="grid grid-cols-2 gap-3 text-xs bg-gray-50 p-3.5 rounded-xl border border-gray-200">
         <div>

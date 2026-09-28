@@ -243,4 +243,5 @@ export {
   createDirectory,
   updateDirectory,
   deleteDirectory,
+  collectSubtreeIds,
 };

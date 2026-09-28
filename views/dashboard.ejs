@@ -580,6 +580,11 @@
           rootDirectoryId: user.rootDirectoryId,
           storageQuota: user.storageQuota,
           storageUsed: user.storageUsed
+        },
+        directoryStats: {
+          fileCount: directoryStats.fileCount,
+          folderCount: directoryStats.folderCount,
+          totalSize: directoryStats.totalSize,
         }
       }).replace(/</g, "\u003c").replace(/>/g, "\u003e"); %>
   </script>

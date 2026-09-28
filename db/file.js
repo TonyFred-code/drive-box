@@ -160,6 +160,20 @@ async function updateFileName(fileId, name, userId) {
   });
 }
 
+async function getFilesStats(directoryIds, userId) {
+  const files = await prisma.file.findMany({
+    where: { directoryId: { in: directoryIds }, userId, deletedAt: null },
+    select: { size: true },
+  });
+
+  const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+
+  return {
+    fileCount: files.length,
+    totalSize,
+  };
+}
+
 export {
   createFilePlaceholder,
   updateFileStorageDetails,
@@ -168,4 +182,5 @@ export {
   getFileForUser,
   updateFileName,
   getUserStorageUsed,
+  getFilesStats,
 };
