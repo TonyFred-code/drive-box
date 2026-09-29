@@ -1,4 +1,5 @@
 import { DIRECTORY_ERROR_CODES } from "../constants/errorCodes.js";
+import { multiSoftDeleteFilesByDirectoryId } from "./file.js";
 import { prisma } from "./prisma.js";
 
 async function getDirectoryWithChildren(id, userId) {
@@ -81,13 +82,7 @@ async function deleteDirectory(id, userId) {
 
   const subtreeIds = await collectSubtreeIds(id);
 
-  await prisma.file.updateMany({
-    where: {
-      directoryId: { in: subtreeIds },
-      deletedAt: null,
-    },
-    data: { deletedAt: new Date() },
-  });
+  await multiSoftDeleteFilesByDirectoryId(subtreeIds, userId);
 
   const orderedIds = [...subtreeIds].reverse();
   for (const dirId of orderedIds) {
@@ -233,4 +228,5 @@ export {
   createDirectory,
   updateDirectory,
   deleteDirectory,
+  collectSubtreeIds,
 };

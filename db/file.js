@@ -46,13 +46,27 @@ async function updateFileStorageDetails(fileId, storagePath) {
 }
 
 /**
+ * Retrieves the total storage used by a specific user in bytes.
+ * @param {string} userId The ID of the user.
+ * @returns {Promise<number>} The total storage used by the user in bytes.
+ */
+async function getUserStorageUsed(userId) {
+  const result = await prisma.file.aggregate({
+    where: { userId, deletedAt: null },
+    _sum: { size: true },
+  });
+
+  return result._sum.size || 0;
+}
+
+/**
  * Soft deletes a file (sets deletedAt). Returns full record so caller can
  * use storagePath to remove the object from Supabase Storage.
  */
 async function softDeleteFile(fileId, userId) {
   const file = await prisma.file.findFirst({
     where: { id: fileId },
-    select: { userId: true, storagePath: true },
+    select: { userId: true, storagePath: true, deletedAt: true },
   });
 
   if (!file) {
@@ -67,10 +81,16 @@ async function softDeleteFile(fileId, userId) {
     throw error;
   }
 
+  if (file.deletedAt) {
+    const error = new Error("File is already deleted");
+    error.code = FILE_ERROR_CODES.FILE_ALREADY_DELETED;
+    throw error;
+  }
+
   return prisma.file.update({
     where: { id: fileId },
     data: { deletedAt: new Date() },
-    select: { id: true, storagePath: true },
+    select: { id: true, storagePath: true, size: true },
   });
 }
 
@@ -146,6 +166,46 @@ async function updateFileName(fileId, name, userId) {
   });
 }
 
+async function getFilesStats(directoryIds, userId) {
+  const files = await prisma.file.findMany({
+    where: { directoryId: { in: directoryIds }, userId, deletedAt: null },
+    select: { size: true },
+  });
+
+  const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+
+  return {
+    fileCount: files.length,
+    totalSize,
+  };
+}
+
+async function multiSoftDeleteFilesByDirectoryId(directoryIds, userId) {
+  await prisma.$transaction(async (tx) => {
+    const files = await tx.$queryRaw`
+    UPDATE "File"
+    SET "deletedAt" = now()
+    WHERE "directoryId" = ANY(${directoryIds})
+      AND "userId" = ${userId}
+      AND "deletedAt" IS NULL
+    RETURNING size
+    `;
+
+    const deletedFilesSize = files.reduce((acc, file) => acc + file.size, 0);
+
+    await tx.user.update({
+      where: { id: userId },
+      data: {
+        storageUsed: {
+          decrement: deletedFilesSize,
+        },
+      },
+    });
+
+    return deletedFilesSize;
+  });
+}
+
 export {
   createFilePlaceholder,
   updateFileStorageDetails,
@@ -153,4 +213,7 @@ export {
   deleteFile,
   getFileForUser,
   updateFileName,
+  getUserStorageUsed,
+  getFilesStats,
+  multiSoftDeleteFilesByDirectoryId,
 };

@@ -5,7 +5,9 @@ import {
 import {
   getDirectoryWithChildren,
   getDirectoryBreadcrumbs,
+  collectSubtreeIds,
 } from "../db/directory.js";
+import { getFilesStats } from "../db/file.js";
 
 async function dashboardGet(req, res) {
   const user = req.user;
@@ -22,6 +24,9 @@ async function dashboardGet(req, res) {
       activeDirectoryId,
       user.id
     );
+
+    const subtreeIds = await collectSubtreeIds(activeDirectoryId);
+    const filesStats = await getFilesStats(subtreeIds, user.id);
 
     let children = [...(currentDirectory.children || [])];
     let files = [...(currentDirectory.files || [])];
@@ -65,6 +70,11 @@ async function dashboardGet(req, res) {
         isRoot,
         sortBy,
         order,
+        directoryStats: {
+          fileCount: filesStats.fileCount,
+          folderCount: subtreeIds.length - 1,
+          totalSize: filesStats.totalSize,
+        },
       });
     }
 
@@ -76,6 +86,11 @@ async function dashboardGet(req, res) {
         files,
         breadcrumbs,
         isRoot,
+        directoryStats: {
+          fileCount: filesStats.fileCount,
+          folderCount: subtreeIds.length - 1,
+          totalSize: filesStats.totalSize,
+        },
       },
     });
   } catch (error) {

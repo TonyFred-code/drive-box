@@ -3,6 +3,7 @@ import {
   FILE_ERROR_CODES,
   PRISMA_ERROR_CODES,
   SUPABASE_ERROR_CODES,
+  USER_ERROR_CODES,
 } from "../constants/errorCodes.js";
 import {
   createFilePlaceholder,
@@ -19,58 +20,21 @@ import {
   deleteFromStorage,
 } from "../lib/storage.js";
 import path from "path";
-import { extractFileNameWithoutExt } from "../lib/fileUtils.js";
-
-const VALID_BASENAME_REGEX = /^[a-zA-Z0-9_\- ]+$/;
-const MAX_FILE_NAME_LENGTH = 32;
-
-/**
- * Validates a file name before upload.
- *
- * The character-set check runs on the stem only (extension contains a dot
- * which would incorrectly fail the regex). The length check runs on the
- * full original name (stem + extension) because that is the value stored
- * in File.name VARCHAR(32).
- *
- * @param {string} stem     - File name without extension
- * @param {string} fullName - Complete original file name (stem + extension)
- * @returns {{ valid: boolean, reason: string }}
- */
-function validateFileDisplayName(stem, fullName) {
-  const trimmedStem = stem.trim();
-  const trimmedFull = fullName.trim();
-
-  if (!trimmedStem)
-    return {
-      valid: false,
-      reason: "File name is missing.",
-    };
-
-  if (trimmedFull.length > MAX_FILE_NAME_LENGTH) {
-    return {
-      valid: false,
-      reason: `File name exceeds the ${MAX_FILE_NAME_LENGTH}-character limit (${trimmedFull.length} characters).`,
-    };
-  }
-
-  if (!trimmedStem.match(VALID_BASENAME_REGEX)) {
-    return {
-      valid: false,
-      reason:
-        "File name can only contain letters, numbers, underscores, hyphens, and spaces",
-    };
-  }
-
-  return {
-    valid: true,
-    reason: "",
-  };
-}
+import {
+  extractFileNameWithoutExt,
+  formatBytes,
+  validateFileDisplayName,
+} from "../lib/fileUtils.js";
+import {
+  decrementUserStorageUsed,
+  incrementUserStorageUsed,
+} from "../db/user.js";
 
 async function uploadMultipleFiles(req, res) {
   const files = req.files;
   const { directoryId } = req.body;
-  const userId = req.user.id;
+  const user = req.user;
+  const userId = user.id;
 
   try {
     await canAllowFileUpload(userId, directoryId);
@@ -87,6 +51,31 @@ async function uploadMultipleFiles(req, res) {
     }
 
     return res.status(status).json({ success: false, error: [{ msg }] });
+  }
+
+  const uploadFileSize = files.reduce((acc, file) => acc + file.size, 0);
+  if (uploadFileSize > user.storageQuota) {
+    return res.status(400).json({
+      success: false,
+      error: [
+        {
+          msg: `Upload size exceeds total storage limit. ${formatBytes(user.storageQuota)} total`,
+        },
+      ],
+    });
+  }
+
+  const userFreeStorage = user.storageQuota - user.storageUsed;
+
+  if (uploadFileSize > userFreeStorage) {
+    return res.status(400).json({
+      success: false,
+      error: [
+        {
+          msg: `Upload size exceeds available storage. ${formatBytes(userFreeStorage)} available`,
+        },
+      ],
+    });
   }
 
   const placeholders = [];
@@ -141,17 +130,30 @@ async function uploadMultipleFiles(req, res) {
 
       try {
         await updateFileStorageDetails(dbId, storagePath);
+        await incrementUserStorageUsed(userId, file.size);
       } catch (error) {
-        console.error(
-          `[upload] Failed to update file storage details for "${file.originalname}" (id: ${dbId}):`,
-          error
-        );
+        if (
+          error.code === USER_ERROR_CODES.STORAGE_INCREMENT_FAILED ||
+          error.code === USER_ERROR_CODES.STORAGE_QUOTA_EXCEEDED
+        ) {
+          console.error(
+            `[upload] Failed to update user storage quota for "${file.originalname}" (id: ${dbId}):`,
+            error
+          );
+        } else {
+          console.error(
+            `[upload] Failed to update file storage details for "${file.originalname}" (id: ${dbId}):`,
+            error
+          );
+        }
+
         await deleteFromStorage(storagePath).catch((cleanupError) => {
           console.error(
             `[storage] Failed to prune storage object for "${file.originalname}" (id: ${dbId}):`,
             cleanupError
           );
         });
+
         throw error;
       }
       return { originalName: file.originalname, dbId };
@@ -261,6 +263,7 @@ async function deleteFile(req, res) {
 
   try {
     const deletedFile = await softDeleteFile(fileId, userId);
+    await decrementUserStorageUsed(userId, deletedFile.size);
     // log but don't fail the request if it errors
     await deleteFromStorage(deletedFile.storagePath).catch((err) =>
       console.error(
@@ -272,14 +275,26 @@ async function deleteFile(req, res) {
   } catch (error) {
     let msg = "Failed to delete file";
     let status = 500;
+    let success = false;
     if (error.code === FILE_ERROR_CODES.FILE_NOT_FOUND) {
       msg = "File not found";
       status = 404;
     } else if (error.code === FILE_ERROR_CODES.UNAUTHORIZED) {
       msg = "Unauthorized to delete file";
       status = 403;
+    } else if (error.code === USER_ERROR_CODES.STORAGE_DECREMENT_FAILED) {
+      msg = "Failed to update storage used";
+      status = 500;
+    } else if (error.code === FILE_ERROR_CODES.FILE_ALREADY_DELETED) {
+      success = true;
     }
-    return res.status(status).json({ success: false, error: [{ msg }] });
+
+    if (success) {
+      // to ensure idempotency
+      return res.json({ success, msg: "File already deleted" });
+    }
+
+    return res.status(status).json({ success, error: [{ msg }] });
   }
 }
 

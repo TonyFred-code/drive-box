@@ -1,3 +1,4 @@
+import { USER_ERROR_CODES } from "../constants/errorCodes.js";
 import { prisma } from "./prisma.js";
 
 async function checkUsernameExists(username) {
@@ -43,6 +44,8 @@ async function getUserById(id) {
       email: true,
       username: true,
       rootDirectoryId: true,
+      storageQuota: true,
+      storageUsed: true,
     },
   });
 
@@ -99,6 +102,8 @@ async function createNewUser(email, username, hashedPassword) {
         username: true,
         email: true,
         createdAt: true,
+        storageQuota: true,
+        storageUsed: true,
       },
     });
 
@@ -108,6 +113,45 @@ async function createNewUser(email, username, hashedPassword) {
   return result;
 }
 
+async function incrementUserStorageUsed(userId, bytes) {
+  try {
+    const result = await prisma.$queryRaw`
+   UPDATE "User"
+   SET "storageUsed" = "storageUsed" + ${bytes}
+   WHERE "id" = ${userId}
+      AND "storageUsed" + ${bytes} <= "storageQuota"
+   RETURNING "id"
+   `;
+
+    if (result.length === 0) {
+      const err = new Error("Storage quota exceeded");
+      err.code = USER_ERROR_CODES.STORAGE_QUOTA_EXCEEDED;
+      throw err;
+    }
+  } catch (error) {
+    console.error("Failed to increment user storage: ", error);
+    const err = new Error("Failed to increment user storage");
+    err.code = USER_ERROR_CODES.STORAGE_INCREMENT_FAILED;
+    throw err;
+  }
+}
+
+async function decrementUserStorageUsed(userId, bytes) {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        storageUsed: { decrement: bytes },
+      },
+    });
+  } catch (error) {
+    console.error("Failed to decrement user storage: ", error);
+    const err = new Error("Failed to decrement user storage");
+    err.code = USER_ERROR_CODES.STORAGE_DECREMENT_FAILED;
+    throw err;
+  }
+}
+
 export {
   getUserByEmail,
   getUserById,
@@ -115,4 +159,6 @@ export {
   createNewUser,
   checkUsernameExists,
   getUserByUsername,
+  incrementUserStorageUsed,
+  decrementUserStorageUsed,
 };
