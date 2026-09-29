@@ -181,33 +181,29 @@ async function getFilesStats(directoryIds, userId) {
 }
 
 async function multiSoftDeleteFilesByDirectoryId(directoryIds, userId) {
-  const filesToDelete = await prisma.file.findMany({
-    where: {
-      directoryId: {
-        in: directoryIds,
-      },
-      userId,
-      deletedAt: null,
-    },
-    select: {
-      size: true,
-    },
-  });
+  await prisma.$transaction(async (tx) => {
+    const files = await tx.$queryRaw`
+    UPDATE "File"
+    SET "deletedAt" = now()
+    WHERE "directoryId" = ANY(${directoryIds})
+      AND "userId" = ${userId}
+      AND "deletedAt" IS NULL
+    RETURNING size
+    `;
 
-  await prisma.file.updateMany({
-    where: {
-      directoryId: {
-        in: directoryIds,
-      },
-      userId,
-      deletedAt: null,
-    },
-    data: {
-      deletedAt: new Date(),
-    },
-  });
+    const deletedFilesSize = files.reduce((acc, file) => acc + file.size, 0);
 
-  return filesToDelete;
+    await tx.user.update({
+      where: { id: userId },
+      data: {
+        storageUsed: {
+          decrement: deletedFilesSize,
+        },
+      },
+    });
+
+    return deletedFilesSize;
+  });
 }
 
 export {

@@ -115,12 +115,19 @@ async function createNewUser(email, username, hashedPassword) {
 
 async function incrementUserStorageUsed(userId, bytes) {
   try {
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        storageUsed: { increment: bytes },
-      },
-    });
+    const result = await prisma.$queryRaw`
+   UPDATE "User"
+   SET "storageUsed" = "storageUsed" + ${bytes}
+   WHERE "id" = ${userId}
+      AND "storageUsed" + ${bytes} <= "storageQuota"
+   RETURNING "id"
+   `;
+
+    if (result.length === 0) {
+      const err = new Error("Storage quota exceeded");
+      err.code = USER_ERROR_CODES.STORAGE_QUOTA_EXCEEDED;
+      throw err;
+    }
   } catch (error) {
     console.error("Failed to increment user storage: ", error);
     const err = new Error("Failed to increment user storage");

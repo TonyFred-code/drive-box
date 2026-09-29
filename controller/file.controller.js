@@ -132,19 +132,28 @@ async function uploadMultipleFiles(req, res) {
         await updateFileStorageDetails(dbId, storagePath);
         await incrementUserStorageUsed(userId, file.size);
       } catch (error) {
-        if (error.code === USER_ERROR_CODES.STORAGE_INCREMENT_FAILED) {
+        if (
+          error.code === USER_ERROR_CODES.STORAGE_INCREMENT_FAILED ||
+          error.code === USER_ERROR_CODES.STORAGE_QUOTA_EXCEEDED
+        ) {
+          console.error(
+            `[upload] Failed to update user storage quota for "${file.originalname}" (id: ${dbId}):`,
+            error
+          );
         } else {
           console.error(
             `[upload] Failed to update file storage details for "${file.originalname}" (id: ${dbId}):`,
             error
           );
-          await deleteFromStorage(storagePath).catch((cleanupError) => {
-            console.error(
-              `[storage] Failed to prune storage object for "${file.originalname}" (id: ${dbId}):`,
-              cleanupError
-            );
-          });
         }
+
+        await deleteFromStorage(storagePath).catch((cleanupError) => {
+          console.error(
+            `[storage] Failed to prune storage object for "${file.originalname}" (id: ${dbId}):`,
+            cleanupError
+          );
+        });
+
         throw error;
       }
       return { originalName: file.originalname, dbId };
