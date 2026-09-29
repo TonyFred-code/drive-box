@@ -13,8 +13,6 @@ import { uiState } from "./uiState.js";
 const detailsDialog = document.getElementById("dialog-details");
 const detailsContent = document.getElementById("details-content");
 
-const ctxDetailsBtn = document.getElementById("ctx-details");
-
 const viewStorageBtn = document.getElementById("view-storage-btn");
 
 const menuCurrentDetailsBtn = document.getElementById(
@@ -32,10 +30,7 @@ function showFolderDetails(folder) {
         ${formatBytes(totalSize)}
        </span>`;
 
-  const parentBreadCrumbs =
-    folder.id === currentDirectory.id
-      ? breadcrumbs.slice(0, breadcrumbs.length - 1)
-      : breadcrumbs;
+  const parentBreadCrumbs = breadcrumbs.slice(0, breadcrumbs.length - 1);
 
   const parentName =
     parentBreadCrumbs && parentBreadCrumbs.length > 0
@@ -78,6 +73,8 @@ function showFolderDetails(folder) {
 }
 
 function showRootDetails() {
+  const isCurrentDirectory = currentDirectory.id === user.rootDirectoryId;
+
   const folderCount = directoryStats.folderCount;
   const fileCount = directoryStats.fileCount;
   const totalSize = directoryStats.totalSize;
@@ -107,13 +104,17 @@ function showRootDetails() {
       </div>
 
       <hr class="border-gray-200" />
+      ${
+        isCurrentDirectory
+          ? `<div>
+          <span class="block text-gray-400 uppercase font-semibold">Statistics</span>
+          ${statsHtml}
+        </div>
+  
+        <hr class="border-gray-200" />`
+          : ""
+      }
 
-      <div>
-        <span class="block text-gray-400 uppercase font-semibold">Statistics</span>
-        ${statsHtml}
-      </div>
-
-      <hr class="border-gray-200" />
 
 
       <div class="grid grid-cols-2 gap-3 text-xs bg-gray-50 p-3.5 rounded-xl border border-gray-200">
@@ -142,10 +143,4 @@ menuCurrentDetailsBtn?.addEventListener("click", () => {
 // Storage details button in profile
 viewStorageBtn?.addEventListener("click", () => {
   showRootDetails();
-});
-
-ctxDetailsBtn?.addEventListener("click", () => {
-  if (uiState.activeContextMenuFolder) {
-    showFolderDetails(uiState.activeContextMenuFolder);
-  }
 });
