@@ -8,13 +8,11 @@ function dialogOpen(dialog) {
 
   uiState.dialogOpenOrder.push(dialog);
   dialog.showModal();
-  console.log(uiState.dialogOpenOrder);
 }
 
 function dialogClose(dialog) {
   uiState.dialogOpenOrder = uiState.dialogOpenOrder.filter((d) => d !== dialog);
   dialog.close();
-  console.log(uiState.dialogOpenOrder);
 }
 
 function getTopMostDialog() {
@@ -27,8 +25,6 @@ function closeTopMostDialog() {
   const topMostDialog = getTopMostDialog();
 
   if (!topMostDialog) return;
-
-  console.log(topMostDialog);
 
   dialogClose(topMostDialog);
 }
