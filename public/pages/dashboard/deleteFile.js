@@ -1,5 +1,4 @@
-// import { dialogOpen } from "./dialog.js";
-import { dialogClose } from "./dialog.js";
+import { dialogClose, dialogOpen } from "./dialog.js";
 import { uiState } from "./uiState.js";
 
 const deleteFileDialog = document.getElementById("dialog-delete-file");
