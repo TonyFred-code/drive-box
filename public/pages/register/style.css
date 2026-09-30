@@ -28,4 +28,10 @@
   [data-field-msg="form"] {
     @apply hidden;
   }
+
+  [data-requirement-met="true"] {
+    span.req-icon {
+      @apply bg-green-500 border-green-500;
+    }
+  }
 }

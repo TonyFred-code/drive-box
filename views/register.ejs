@@ -3,208 +3,281 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register</title>
+    <title>Create Account — Drive Box</title>
+    <meta
+      name="description"
+      content="Create a Drive Box account to start storing and organizing your files securely in the cloud."
+    />
     <link rel="stylesheet" href="/shared.css" />
+    <link rel="stylesheet" href="/pages/register/style.css" />
     <script type="module" src="/pages/register/main.js" defer></script>
   </head>
-  <body>
+  <body
+    class="bg-gray-50 text-gray-900 min-h-screen flex flex-col font-sans antialiased selection:bg-blue-500 selection:text-white"
+  >
     <div
       id="root"
-      class="register__page-wrapper flex justify-center min-h-screen"
+      class="register__page-wrapper flex flex-col flex-1 items-center justify-center px-4 py-12"
     >
-      <div class="max-w-lg w-full flex-col my-8 flex gap-8 mx-3">
-        <header
-          class="flex gap-8 border rounded-md items-center border-gray-400"
+      <div
+        class="w-full max-w-md bg-white rounded-2xl shadow-xl ring-1 ring-black/5 p-8 flex flex-col gap-8"
+      >
+        <a
+          href="/"
+          class="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg self-start"
         >
-          <div class="flex items-center justify-center size-14">
-            <img
-              class="w-full h-full"
-              src="/images/drive-box-logo-icon.svg"
-              alt=""
-            />
-          </div>
-          <h1 class="flex-1 text-2xl font-bold">Drive Box</h1>
-        </header>
-        <main class="flex flex-col gap-4 flex-1">
-          <h2 class="text-xl font-medium text-center">Create account</h2>
+          <img
+            src="/images/drive-box-logo-icon.svg"
+            alt=""
+            class="size-9 transition-transform group-hover:scale-105"
+          />
+          <span class="text-xl font-bold tracking-tight text-gray-900">
+            Drive <span class="text-blue-600">Box</span>
+          </span>
+        </a>
 
-          <form
-            action="/register"
-            novalidate
-            class="flex flex-col gap-4"
-            data-active-step="one"
-            data-validity="default"
+        <h1 class="text-2xl font-bold text-gray-900">Create your account</h1>
+
+        <form
+          action="/register"
+          novalidate
+          class="flex flex-col gap-6"
+          data-active-step="one"
+          data-validity="default"
+        >
+          <div
+            class="flex sm:items-center gap-3 flex-col sm:flex-row justify-between"
           >
-            <div
-              class="*:font-bold *:text-lg *:border *:border-gray-600 *:rounded-full *:flex *:items-center *:justify-center flex gap-8 justify-around *:p-2 *:size-12 *:text-center my-4"
-            >
-              <span data-step-indicator="one">1</span>
-              <span data-step-indicator="two">2</span>
+            <div class="flex items-center gap-2 shrink-0">
+              <span
+                data-step-indicator="one"
+                class="size-7 rounded-full flex items-center justify-center text-xs font-bold border border-gray-300 text-gray-500 transition-colors"
+                >1</span
+              >
+              <span class="text-xs font-medium text-gray-500 step-label-one"
+                >Account details</span
+              >
             </div>
-            <div>
-              <span data-field-msg="form" class="hidden"></span>
-              <div data-step="one" class="my-3 flex flex-col gap-3">
-                <h3 class="text-center">Personal Details</h3>
-                <div>
-                  <span
-                    data-field-type="error"
-                    data-field-msg="email"
-                    class="hidden text-sm data-[field-type='error']:text-red-600"
-                  ></span>
-                  <div class="flex flex-col gap-2">
-                    <label for="email">Email Address:</label>
-                    <input
-                      type="email"
-                      name="email"
-                      id="email"
-                      placeholder="example@mail.com"
-                      data-field-name="email"
-                      data-validity="default"
-                      class="py-2 px-3 rounded-md border-gray-200 border focus:border-blue-400 outline-none data-[validity='valid']:border-green-400 data-[validity='invalid']:border-red-400 data-[validity='invalid']:placeholder:text-red-300"
-                    />
-                  </div>
-                </div>
-                <div class="flex-col flex gap-2">
-                  <span
-                    class="hidden text-sm data-[field-type='error']:text-red-600"
-                    data-field-msg="username"
-                    data-field-type="error"
-                  ></span>
-                  <div class="flex flex-col gap-2">
-                    <label for="username">Username</label>
-                    <input
-                      type="text"
-                      name="username"
-                      id="username"
-                      data-field-name="username"
-                      placeholder="john_doe_1"
-                      class="py-2 px-3 rounded-md border-gray-200 border focus:border-blue-400 outline-none data-[validity='valid']:border-green-400 data-[validity='invalid']:border-red-400 data-[validity='invalid']:placeholder:text-red-300"
-                    />
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  id="next-form-step-btn"
-                  class="w-fit self-end my-3 cursor-pointer rounded-lg py-2 px-6 text-center text-lg font-semibold border border-gray-400 capitalize"
-                >
-                  next
-                </button>
-              </div>
-              <div data-step="two" class="my-3 flex flex-col gap-3">
-                <h3 class="text-center text-xl">Security Parameters</h3>
-                <div class="flex flex-col gap-4">
-                  <div class="flex flex-col gap-2">
-                    <span
-                      data-field-msg="password"
-                      class="hidden text-sm text-red-600"
-                    ></span>
-                    <div class="flex flex-col gap-2">
-                      <label for="password">Password</label>
-                      <input
-                        type="password"
-                        data-field-name="password"
-                        name="password"
-                        id="password"
-                        autocomplete="new-password"
-                        data-validity="default"
-                        class="py-2 px-3 rounded-md border-gray-200 border focus:border-blue-400 outline-none data-[validity='valid']:border-green-400 data-[validity='invalid']:border-red-400 data-[validity='invalid']:placeholder:text-red-300"
-                      />
-                      <div>
-                        <input type="checkbox" name="toggle" id="toggle" />
-                        <label for="toggle" class="select-none cursor-pointer"
-                          >Show password</label
-                        >
-                      </div>
-                      <div id="password-requirements-container" class="hidden">
-                        <p>Password must contain at least</p>
-                        <ul id="req-list">
-                          <li
-                            data-password-requirement="length"
-                            data-requirement-met="false"
-                            class="data-[requirement-met='true']:line-through"
-                          >
-                            12 or more characters
-                          </li>
-                          <li
-                            data-password-requirement="upper"
-                            data-requirement-met="false"
-                            class="data-[requirement-met='true']:line-through"
-                          >
-                            1 uppercase character
-                          </li>
-                          <li
-                            data-password-requirement="lower"
-                            data-requirement-met="false"
-                            class="data-[requirement-met='true']:line-through"
-                          >
-                            1 lowercase character
-                          </li>
-                          <li
-                            data-password-requirement="number"
-                            data-requirement-met="false"
-                            class="data-[requirement-met='true']:line-through"
-                          >
-                            1 number (digit)
-                          </li>
-                          <li
-                            data-password-requirement="special"
-                            data-requirement-met="false"
-                            class="data-[requirement-met='true']:line-through"
-                          >
-                            1 special character
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex flex-col gap-2">
-                    <span
-                      data-field-msg="confirmPassword"
-                      class="hidden text-sm text-red-600"
-                    ></span>
-                    <div class="flex flex-col gap-2">
-                      <label for="confirmPassword">Confirm Password</label>
-                      <input
-                        type="password"
-                        name="confirmPassword"
-                        id="confirmPassword"
-                        placeholder="********"
-                        autocomplete="new-password"
-                        data-validity="default"
-                        data-field-name="confirmPassword"
-                        class="py-2 px-3 rounded-md border-gray-200 border focus:border-blue-400 outline-none data-[validity='valid']:border-green-400 data-[validity='invalid']:border-red-400 data-[validity='invalid']:placeholder:text-red-300"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div class="flex gap-8 justify-between px-3">
-                  <button
-                    type="button"
-                    id="previous-form-step-btn"
-                    class="w-fit my-3 cursor-pointer rounded-lg py-2 px-6 text-center text-lg font-semibold border border-gray-400 capitalize"
-                  >
-                    previous
-                  </button>
-                  <button
-                    type="submit"
-                    id="submit-btn"
-                    class="w-fit my-3 cursor-pointer rounded-lg py-2 px-6 text-center text-lg font-semibold border border-gray-400 capitalize"
-                  >
-                    create account
-                  </button>
-                </div>
-              </div>
+            <hr class="hidden sm:block w-full text-gray-200 mx-1 h-px" />
+            <div class="flex items-center gap-2 shrink-0 justify-end">
+              <span
+                data-step-indicator="two"
+                class="size-7 rounded-full flex items-center justify-center text-xs font-bold border border-gray-300 text-gray-500 transition-colors sm:order-1"
+                >2</span
+              >
+              <span
+                class="text-xs font-medium text-gray-500 text-right step-label-two"
+                >Security</span
+              >
             </div>
-          </form>
-          <div class="self-center justify-self-end flex gap-3">
-            Have an account?
-            <a
-              class="text-blue-400 underline hover:text-blue-600 hover:no-underline"
-              href="/login"
-              >Log In</a
-            >
           </div>
-        </main>
+
+          <span
+            data-field-msg="form"
+            class="hidden text-sm bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3"
+          ></span>
+
+          <div data-step="one" class="flex flex-col gap-5">
+            <div class="flex flex-col gap-1.5">
+              <label for="email" class="text-sm font-medium text-gray-700"
+                >Email address</label
+              >
+              <span
+                data-field-type="error"
+                data-field-msg="email"
+                class="hidden text-xs text-red-600"
+              ></span>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="you@example.com"
+                data-field-name="email"
+                data-validity="default"
+                autocomplete="email"
+                class="w-full py-2.5 px-3.5 rounded-lg border border-gray-200 bg-white text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all data-[validity='valid']:border-green-400 data-[validity='valid']:ring-1 data-[validity='valid']:ring-green-300 data-[validity='invalid']:border-red-400 data-[validity='invalid']:ring-1 data-[validity='invalid']:ring-red-200"
+              />
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label for="username" class="text-sm font-medium text-gray-700"
+                >Username</label
+              >
+              <span
+                class="hidden text-xs text-red-600"
+                data-field-msg="username"
+                data-field-type="error"
+              ></span>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                data-field-name="username"
+                placeholder="john_doe_1"
+                autocomplete="username"
+                class="w-full py-2.5 px-3.5 rounded-lg border border-gray-200 bg-white text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all data-[validity='valid']:border-green-400 data-[validity='valid']:ring-1 data-[validity='valid']:ring-green-300 data-[validity='invalid']:border-red-400 data-[validity='invalid']:ring-1 data-[validity='invalid']:ring-red-200"
+              />
+              <p class="text-xs text-gray-400">
+                3–32 characters, letters, numbers, and underscores only.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              id="next-form-step-btn"
+              class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-lg transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 cursor-pointer"
+            >
+              Continue
+            </button>
+          </div>
+
+          <!-- Step 2: Security -->
+          <div data-step="two" class="flex flex-col gap-5">
+            <!-- Password -->
+            <div class="flex flex-col gap-1.5">
+              <label for="password" class="text-sm font-medium text-gray-700"
+                >Password</label
+              >
+              <span
+                data-field-msg="password"
+                class="hidden text-xs text-red-600"
+              ></span>
+              <input
+                type="password"
+                data-field-name="password"
+                name="password"
+                id="password"
+                autocomplete="new-password"
+                placeholder="Create a strong password"
+                data-validity="default"
+                class="w-full py-2.5 px-3.5 rounded-lg border border-gray-200 bg-white text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all data-[validity='valid']:border-green-400 data-[validity='valid']:ring-1 data-[validity='valid']:ring-green-300 data-[validity='invalid']:border-red-400 data-[validity='invalid']:ring-1 data-[validity='invalid']:ring-red-200"
+              />
+
+              <label
+                class="flex items-center gap-2 mt-0.5 cursor-pointer select-none w-fit"
+              >
+                <input
+                  type="checkbox"
+                  name="toggle"
+                  id="toggle"
+                  class="size-4 rounded border-gray-300 accent-blue-600 cursor-pointer"
+                />
+                <span class="text-sm text-gray-500">Show password</span>
+              </label>
+
+              <div
+                id="password-requirements-container"
+                class="hidden mt-2 bg-gray-50 border border-gray-200 rounded-lg p-3"
+              >
+                <p class="text-xs font-medium text-gray-600 mb-2">
+                  Password must contain at least:
+                </p>
+                <ul class="space-y-1" id="req-list">
+                  <li
+                    data-password-requirement="length"
+                    data-requirement-met="false"
+                    class="flex items-center gap-2 text-xs text-gray-500 data-[requirement-met='true']:text-green-600 data-[requirement-met='true']:line-through"
+                  >
+                    <span
+                      class="req-icon size-3.5 rounded-full border border-current flex items-center justify-center shrink-0"
+                    ></span>
+                    12 or more characters
+                  </li>
+                  <li
+                    data-password-requirement="upper"
+                    data-requirement-met="false"
+                    class="flex items-center gap-2 text-xs text-gray-500 data-[requirement-met='true']:text-green-600 data-[requirement-met='true']:line-through"
+                  >
+                    <span
+                      class="req-icon size-3.5 rounded-full border border-current flex items-center justify-center shrink-0"
+                    ></span>
+                    1 uppercase character
+                  </li>
+                  <li
+                    data-password-requirement="lower"
+                    data-requirement-met="false"
+                    class="flex items-center gap-2 text-xs text-gray-500 data-[requirement-met='true']:text-green-600 data-[requirement-met='true']:line-through"
+                  >
+                    <span
+                      class="req-icon size-3.5 rounded-full border border-current flex items-center justify-center shrink-0"
+                    ></span>
+                    1 lowercase character
+                  </li>
+                  <li
+                    data-password-requirement="number"
+                    data-requirement-met="false"
+                    class="flex items-center gap-2 text-xs text-gray-500 data-[requirement-met='true']:text-green-600 data-[requirement-met='true']:line-through"
+                  >
+                    <span
+                      class="req-icon size-3.5 rounded-full border border-current flex items-center justify-center shrink-0"
+                    ></span>
+                    1 number (digit)
+                  </li>
+                  <li
+                    data-password-requirement="special"
+                    data-requirement-met="false"
+                    class="flex items-center gap-2 text-xs text-gray-500 data-[requirement-met='true']:text-green-600 data-[requirement-met='true']:line-through"
+                  >
+                    <span
+                      class="req-icon size-3.5 rounded-full border border-current flex items-center justify-center shrink-0"
+                    ></span>
+                    1 special character
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label
+                for="confirmPassword"
+                class="text-sm font-medium text-gray-700"
+                >Confirm password</label
+              >
+              <span
+                data-field-msg="confirmPassword"
+                class="hidden text-xs text-red-600"
+              ></span>
+              <input
+                type="password"
+                name="confirmPassword"
+                id="confirmPassword"
+                placeholder="Re-enter your password"
+                autocomplete="new-password"
+                data-validity="default"
+                data-field-name="confirmPassword"
+                class="w-full py-2.5 px-3.5 rounded-lg border border-gray-200 bg-white text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all data-[validity='valid']:border-green-400 data-[validity='valid']:ring-1 data-[validity='valid']:ring-green-300 data-[validity='invalid']:border-red-400 data-[validity='invalid']:ring-1 data-[validity='invalid']:ring-red-200"
+              />
+            </div>
+
+            <div class="flex gap-3 pt-1 flex-col sm:flex-row my-2">
+              <button
+                type="button"
+                id="previous-form-step-btn"
+                class="flex-1 py-2.5 px-4 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-semibold rounded-lg border border-gray-200 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 cursor-pointer"
+              >
+                Back
+              </button>
+              <button
+                type="submit"
+                id="submit-btn"
+                class="flex-1 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-lg transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 cursor-pointer"
+              >
+                Create account
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Login link -->
+        <p class="text-sm text-center text-gray-500">
+          Already have an account?
+          <a
+            href="/login"
+            class="text-blue-600 font-medium hover:text-blue-700 hover:underline transition-colors"
+          >
+            Sign in
+          </a>
+        </p>
       </div>
     </div>
   </body>
