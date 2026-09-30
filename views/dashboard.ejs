@@ -389,10 +389,10 @@
     </dialog>
 
     <dialog id="dialog-selected-files" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
-      <div class="p-4 flex flex-col gap-5">
+      <div class="p-4 flex flex-col gap-5 max-h-[75vh]">
         <h3 class="text-lg font-bold text-gray-900">Selected files</h3>
 
-        <div id="selected-files-details" class="space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
+        <div id="selected-files-details" class="space-y-2 overflow-y-auto flex-1">
 
         </div>
         <div class="flex gap-2 justify-end pt-2">
@@ -407,11 +407,11 @@
     </dialog>
 
     <dialog id="dialog-upload-error" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
-      <div class="p-4 flex flex-col gap-5">
+      <div class="p-4 flex flex-col gap-5 max-h-[75vh]">
         <h3 class="text-lg font-bold text-gray-900">Upload failed</h3>
         <p id="upload-error-msg" class="text-gray-600 italic text-sm" ></p>
 
-        <div id="upload-error-details" class="space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
+        <div id="upload-error-details" class="space-y-2 overflow-y-auto flex-1">
 
         </div>
         <div class="flex gap-2 justify-end pt-2">

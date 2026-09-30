@@ -1,4 +1,5 @@
 import { formatBytes } from "../../lib/dashboardUtils.js";
+import { dialogClose, dialogOpen } from "./dialog.js";
 import { currentDirectory, user } from "./serverData.js";
 import { uiState } from "./uiState.js";
 
@@ -28,8 +29,8 @@ const uploadResultsStored = document.getElementById("upload-results-stored");
 const uploadResultsFailed = document.getElementById("upload-results-failed");
 
 function openFileUploadDialog() {
-  fileUploadDialog.showModal();
-  uploadBtn.disabled = true;
+  dialogOpen(fileUploadDialog);
+  uploadBtn.disabled = uiState.selectedFiles.length === 0;
 }
 
 emptyUploadBtn?.addEventListener("click", openFileUploadDialog);
@@ -75,8 +76,9 @@ function removeFile(fileIndex) {
   fileUploadInput.files = dt.files;
 
   if (uiState.selectedFiles.length === 0) {
-    selectedFilesDialog.close();
+    dialogClose(selectedFilesDialog);
     hideSelectedFilesOverview();
+    uploadBtn.disabled = true;
   }
 }
 
@@ -86,16 +88,12 @@ function displaySelectedFiles(files) {
   files.forEach((file, index) => {
     const fileItem = document.createElement("div");
     fileItem.className =
-      "flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-3 mb-2";
+      "flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-3 mb-2 gap-4";
 
-    const metaWrapper = document.createElement("div");
-    metaWrapper.className = "flex flex-col";
-
-    const nameSpan = document.createElement("span");
-    nameSpan.className =
+    const fileName = document.createElement("span");
+    fileName.className =
       "file-name font-medium text-gray-800 truncate max-w-[20rem]";
-    nameSpan.textContent = file.name;
-    metaWrapper.appendChild(nameSpan);
+    fileName.textContent = file.name;
 
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
@@ -108,7 +106,7 @@ function displaySelectedFiles(files) {
       removeFile(index);
     });
 
-    fileItem.appendChild(metaWrapper);
+    fileItem.appendChild(fileName);
     fileItem.appendChild(removeBtn);
     selectedFilesDetails.appendChild(fileItem);
   });
@@ -127,7 +125,7 @@ viewSelectedFilesBtn?.addEventListener("click", () => {
   if (fileUploadInput.files && fileUploadInput.files.length > 0) {
     uiState.selectedFiles = Array.from(fileUploadInput.files);
     displaySelectedFiles(uiState.selectedFiles);
-    selectedFilesDialog.showModal();
+    dialogOpen(selectedFilesDialog);
   }
 });
 
@@ -172,7 +170,7 @@ function handleUploadError(error, result = null) {
     uploadErrorDetails.appendChild(ul);
   }
 
-  uploadErrorDialog.showModal();
+  dialogOpen(uploadErrorDialog);
 }
 
 function handleUploadResult(result) {
@@ -227,7 +225,7 @@ function handleUploadResult(result) {
   });
   uploadResultsFailed.appendChild(failedUl);
 
-  uploadResultsDialog.showModal();
+  dialogOpen(uploadResultsDialog);
 }
 
 async function handleUploadFile(e) {
@@ -267,13 +265,18 @@ async function handleUploadFile(e) {
   }
 }
 
-removeAllFilesBtn?.addEventListener("click", () => {
+function resetFileUpload() {
   uiState.selectedFiles = [];
   displaySelectedFilesOverview(uiState.selectedFiles);
   displaySelectedFiles(uiState.selectedFiles);
   fileUploadInput.value = "";
-  selectedFilesDialog.close();
+  uploadBtn.disabled = true;
   fileList.classList.add("hidden");
+}
+
+removeAllFilesBtn?.addEventListener("click", () => {
+  dialogClose(selectedFilesDialog);
+  resetFileUpload();
 });
 
 // Submit the upload form with Enter when files are ready
@@ -287,3 +290,7 @@ fileUploadDialog?.addEventListener("keydown", (e) => {
 uploadResultsDialog?.addEventListener("close", () => window.location.reload());
 
 uploadForm?.addEventListener("submit", handleUploadFile);
+
+fileUploadDialog?.addEventListener("close", () => {
+  resetFileUpload();
+});

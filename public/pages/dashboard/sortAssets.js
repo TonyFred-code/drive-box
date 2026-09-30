@@ -1,3 +1,5 @@
+import { dialogOpen } from "./dialog.js";
+
 const openSortBtn = document.getElementById("open-sort-btn");
 const sortDialog = document.getElementById("dialog-sort");
 const sortForm = document.getElementById("sort-form");
@@ -5,7 +7,7 @@ const labelSortAsc = document.getElementById("label-sort-asc");
 const labelSortDesc = document.getElementById("label-sort-desc");
 
 openSortBtn?.addEventListener("click", () => {
-  sortDialog.showModal();
+  dialogOpen(sortDialog);
 });
 
 // Dynamic sorting direction labels based on field

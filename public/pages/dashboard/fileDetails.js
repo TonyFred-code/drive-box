@@ -1,4 +1,5 @@
 import { formatBytes, formatDate } from "../../lib/dashboardUtils.js";
+import { dialogOpen } from "./dialog.js";
 import { files } from "./serverData.js";
 import { uiState } from "./uiState.js";
 
@@ -26,7 +27,7 @@ function displayFileDetails(file) {
   fileDetails.querySelector("#_fdd-name").textContent = fileData.name;
   fileDetails.querySelector("#_fdd-mime").textContent = fileData.mimeType;
 
-  fileDetailsDialog.showModal();
+  dialogOpen(fileDetailsDialog);
 }
 
 ctxFileDetailsBtn?.addEventListener("click", () => {

@@ -1,3 +1,4 @@
+import { dialogClose, dialogOpen } from "./dialog.js";
 import { uiState } from "./uiState.js";
 
 const deleteFileDialog = document.getElementById("dialog-delete-file");
@@ -22,7 +23,7 @@ async function handleFileDeletion(fileId) {
       return;
     }
 
-    deleteFileDialog.close();
+    dialogClose(deleteFileDialog);
     window.location.reload();
   } catch (error) {
     console.error("Error deleting file:", error);
@@ -43,5 +44,5 @@ ctxDeleteFileBtn?.addEventListener("click", () => {
   if (!uiState.activeContextMenuFile) return;
 
   deleteFileSummary.textContent = `Are you sure you want to delete "${uiState.activeContextMenuFile.name}"?`;
-  deleteFileDialog.showModal();
+  dialogOpen(deleteFileDialog);
 });
