@@ -31,3 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - File upload dialog now clears selected files on closing it (with escape or button).
+
+## [1.2.0] - 2026-09-30
+
+### Changed
+
+- Improved user interface of register and login pages
+- Corrected size of sandbox declared in landing page
