@@ -1,4 +1,5 @@
 import { formatBytes, formatDate } from "../../lib/dashboardUtils.js";
+import { dialogOpen } from "./dialog.js";
 import {
   breadcrumbs,
   children,
@@ -69,7 +70,7 @@ function showFolderDetails(folder) {
   detailsContent.querySelector("#_fd-name").textContent = folder.name;
   detailsContent.querySelector("#_fd-parent").textContent = parentName;
 
-  detailsDialog.showModal();
+  dialogOpen(detailsDialog);
 }
 
 function showRootDetails() {
@@ -129,7 +130,7 @@ function showRootDetails() {
       </div>
     </div>
   `;
-  detailsDialog.showModal();
+  dialogOpen(detailsDialog);
 }
 
 menuCurrentDetailsBtn?.addEventListener("click", () => {

@@ -1,3 +1,4 @@
+import { dialogOpen } from "./dialog.js";
 import { closeFolderContextMenu } from "./folderContextMenu.js";
 import { breadcrumbs, currentDirectory } from "./serverData.js";
 import { uiState } from "./uiState.js";
@@ -17,7 +18,7 @@ function openDeleteFolderDialog(folderId, folderName, isCurrent = false) {
   deleteFolderIdInput.value = folderId;
   deleteFolderIdInput.dataset.isCurrent = isCurrent ? "true" : "false";
   deleteFolderMsg.textContent = `Are you sure you want to delete "${folderName}" and all of its contents?`;
-  deleteFolderDialog.showModal();
+  dialogOpen(deleteFolderDialog);
 }
 
 menuDeleteCurrentBtn?.addEventListener("click", () => {

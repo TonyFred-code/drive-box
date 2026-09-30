@@ -1,5 +1,6 @@
 import "./deleteFile.js";
 import "./deleteFolder.js";
+import { closeTopMostDialog, dialogClose } from "./dialog.js";
 import {
   closeFileContextMenu,
   fileContextMenuIsOpen,
@@ -26,22 +27,19 @@ function closeAllMenus() {
   closeFileContextMenu();
   closeProfileMenu();
 }
-function closeAllDialogs() {
-  document.querySelectorAll("dialog[open]").forEach((d) => d.close());
-}
 
 // Attach generic close buttons for dialogs
 document.querySelectorAll(".dialog-cancel-btn").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     const dialog = e.target.closest("dialog");
-    if (dialog) dialog.close();
+    if (dialog) dialogClose(dialog);
   });
 });
 
 // Close dialog on outside click
 document.querySelectorAll("dialog").forEach((dialog) => {
   dialog.addEventListener("click", (e) => {
-    if (e.target === dialog) dialog.close();
+    if (e.target === dialog) dialogClose(dialog);
   });
 });
 
@@ -93,6 +91,7 @@ document.addEventListener("click", () => {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     closeAllMenus();
-    closeAllDialogs();
+    closeTopMostDialog();
+    e.preventDefault();
   }
 });

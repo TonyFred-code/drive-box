@@ -3,6 +3,7 @@ import {
   extractFileNameWithoutExt,
   validateFileName,
 } from "../../lib/dashboardUtils.js";
+import { dialogOpen } from "./dialog.js";
 import { uiState } from "./uiState.js";
 
 const renameFileDialog = document.getElementById("dialog-rename-file");
@@ -33,7 +34,7 @@ function openRenameFileDialog(file) {
   renameFileNameInput.focus();
   renameFileNameInput.select();
 
-  renameFileDialog.showModal();
+  dialogOpen(renameFileDialog);
 }
 
 renameFileNameInput.addEventListener("input", () => {

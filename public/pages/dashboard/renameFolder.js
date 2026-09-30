@@ -1,4 +1,5 @@
 import { validateFolderName } from "../../lib/dashboardUtils.js";
+import { dialogOpen } from "./dialog.js";
 import { breadcrumbs, currentDirectory } from "./serverData.js";
 import { uiState } from "./uiState.js";
 
@@ -22,7 +23,7 @@ function openRenameFolderDialog(folderId, currentName) {
   renameFolderNameInput.value = currentName;
   renameFolderCharCount.textContent = `${currentName.length}/32`;
   renameFolderError.classList.add("hidden");
-  renameFolderDialog.showModal();
+  dialogOpen(renameFolderDialog);
   renameFolderNameInput.focus();
   renameFolderNameInput.select();
 }

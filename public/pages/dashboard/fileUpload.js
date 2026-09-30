@@ -1,4 +1,5 @@
 import { formatBytes } from "../../lib/dashboardUtils.js";
+import { dialogClose, dialogOpen } from "./dialog.js";
 import { currentDirectory, user } from "./serverData.js";
 import { uiState } from "./uiState.js";
 
@@ -28,7 +29,7 @@ const uploadResultsStored = document.getElementById("upload-results-stored");
 const uploadResultsFailed = document.getElementById("upload-results-failed");
 
 function openFileUploadDialog() {
-  fileUploadDialog.showModal();
+  dialogOpen(fileUploadDialog);
   uploadBtn.disabled = true;
 }
 
@@ -75,7 +76,7 @@ function removeFile(fileIndex) {
   fileUploadInput.files = dt.files;
 
   if (uiState.selectedFiles.length === 0) {
-    selectedFilesDialog.close();
+    dialogClose(selectedFilesDialog);
     hideSelectedFilesOverview();
   }
 }
@@ -127,7 +128,7 @@ viewSelectedFilesBtn?.addEventListener("click", () => {
   if (fileUploadInput.files && fileUploadInput.files.length > 0) {
     uiState.selectedFiles = Array.from(fileUploadInput.files);
     displaySelectedFiles(uiState.selectedFiles);
-    selectedFilesDialog.showModal();
+    dialogOpen(selectedFilesDialog);
   }
 });
 
@@ -172,7 +173,7 @@ function handleUploadError(error, result = null) {
     uploadErrorDetails.appendChild(ul);
   }
 
-  uploadErrorDialog.showModal();
+  dialogOpen(uploadErrorDialog);
 }
 
 function handleUploadResult(result) {
@@ -227,7 +228,7 @@ function handleUploadResult(result) {
   });
   uploadResultsFailed.appendChild(failedUl);
 
-  uploadResultsDialog.showModal();
+  dialogOpen(uploadResultsDialog);
 }
 
 async function handleUploadFile(e) {
@@ -272,7 +273,7 @@ removeAllFilesBtn?.addEventListener("click", () => {
   displaySelectedFilesOverview(uiState.selectedFiles);
   displaySelectedFiles(uiState.selectedFiles);
   fileUploadInput.value = "";
-  selectedFilesDialog.close();
+  dialogClose(selectedFilesDialog);
   fileList.classList.add("hidden");
 });
 

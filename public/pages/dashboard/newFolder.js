@@ -1,4 +1,5 @@
 import { validateFolderName } from "../../lib/dashboardUtils.js";
+import { dialogOpen } from "./dialog.js";
 import { currentDirectory } from "./serverData.js";
 
 const emptyNewFolderBtn = document.getElementById("empty-new-folder-btn");
@@ -16,7 +17,7 @@ function openNewFolderDialog() {
   newFolderNameInput.value = "Untitled folder";
   newFolderCharCount.textContent = `${newFolderNameInput.value.length}/32`;
   newFolderSubmitBtn.disabled = false;
-  newFolderDialog.showModal();
+  dialogOpen(newFolderDialog);
   newFolderNameInput.focus();
   newFolderNameInput.select();
 }
