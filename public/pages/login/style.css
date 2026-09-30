@@ -1,11 +1,11 @@
 #root.login__page-wrapper {
   form {
-    &[data-validity="invalid"] span[data-field-msg="form"] {
-      @apply inline;
+    &[data-validity="invalid"] [data-form-error-banner] {
+      @apply flex;
     }
 
-    &[data-validity="default"] span[data-field-msg="form"],
-    &[data-validity="valid"] span[data-field-msg="form"] {
+    &[data-validity="default"] [data-form-error-banner],
+    &[data-validity="valid"] [data-form-error-banner] {
       @apply hidden;
     }
   }

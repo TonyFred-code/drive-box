@@ -3,109 +3,134 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Log In</title>
+    <title>Log In — Drive Box</title>
+    <meta
+      name="description"
+      content="Log in to your Drive Box account to access your files and folders."
+    />
     <link rel="stylesheet" href="/shared.css" />
     <link rel="stylesheet" href="/pages/login/style.css" />
     <script src="/pages/login/main.js" defer></script>
   </head>
-  <body>
-    <div id="root" class="login__page-wrapper justify-center min-h-screen py-4">
-      <div class="max-w-lg mx-auto w-full flex flex-col gap-8">
-        <header
-          class="flex border rounded-lg border-gray-300 gap-8 items-center"
+  <body
+    class="bg-gray-50 text-gray-900 min-h-screen flex flex-col font-sans antialiased selection:bg-blue-500 selection:text-white"
+  >
+    <div
+      id="root"
+      class="login__page-wrapper flex flex-col flex-1 items-center justify-center px-4 py-12"
+    >
+      <div
+        class="w-full max-w-md bg-white rounded-2xl shadow-xl ring-1 ring-black/5 p-8 flex flex-col gap-8"
+      >
+        <a
+          href="/"
+          class="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg self-start"
         >
-          <div class="size-20">
-            <img
-              class="w-full h-full"
-              src="/images/drive-box-logo-icon.svg"
-              alt=""
-            />
-          </div>
-          <h1 class="capitalize text-3xl font-medium flex-1">drive box</h1>
-        </header>
-        <main class="flex flex-col gap-5">
-          <h2 class="text-2xl text-center">Welcome to drive box!</h2>
+          <img
+            src="/images/drive-box-logo-icon.svg"
+            alt="Drive Box Logo"
+            class="size-9 transition-transform group-hover:scale-105"
+          />
+          <span class="text-xl font-bold tracking-tight text-gray-900">
+            Drive <span class="text-blue-600">Box</span>
+          </span>
+        </a>
 
-          <form
-            class="flex flex-col gap-2 my-8 flex-1"
-            data-validity="default"
-            id="login"
-            action="/login"
-            method="post"
-            novalidate
+        <div class="flex flex-col gap-1">
+          <h1 class="text-2xl font-bold text-gray-900">Welcome back</h1>
+          <p class="text-sm text-gray-500">
+            Sign in to your account to continue
+          </p>
+        </div>
+
+        <form
+          class="flex flex-col gap-5"
+          data-validity="default"
+          id="login"
+          action="/login"
+          method="post"
+          novalidate
+        >
+          <div
+            class="hidden items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3"
+            data-form-error-banner
           >
-            <span data-field-msg="form" class="text-sm text-red-600"></span>
-
-            <div class="flex flex-col gap-8">
-              <div class="flex flex-col gap-2">
-                <span
-                  data-field-msg="userIdentifier"
-                  class="hidden text-red-600 text-sm"
-                ></span>
-                <div class="flex flex-col gap-2">
-                  <label for="userIdentifier">Username or Email</label>
-                  <input
-                    type="text"
-                    id="userIdentifier"
-                    name="userIdentifier"
-                    placeholder="Enter username or email"
-                    autocomplete="username"
-                    required
-                    data-validity="default"
-                    data-field-name="userIdentifier"
-                    class="py-2 px-3 rounded-md border-gray-200 border focus:border-blue-400 outline-none data-[validity='valid']:border-green-400 data-[validity='invalid']:border-red-400 data-[validity='invalid']:placeholder:text-red-300"
-                  />
-                </div>
-              </div>
-              <div class="flex flex-col gap-2">
-                <span
-                  data-field-msg="password"
-                  class="hidden text-red-600 text-sm"
-                ></span>
-                <div class="flex flex-col gap-2">
-                  <label for="password">Password</label>
-                  <input
-                    required
-                    placeholder="********"
-                    autocomplete="current-password"
-                    type="password"
-                    name="password"
-                    id="password"
-                    data-validity="default"
-                    data-field-name="password"
-                    class="py-2 px-3 rounded-md border-gray-200 border focus:border-blue-400 outline-none data-[validity='valid']:border-green-400 data-[validity='invalid']:border-red-400 data-[validity='invalid']:placeholder:text-red-300"
-                  />
-                </div>
-                <div>
-                  <input
-                    class="cursor-pointer"
-                    type="checkbox"
-                    name="toggle"
-                    id="toggle"
-                  />
-                  <label for="toggle" class="select-none cursor-pointer"
-                    >Show password</label
-                  >
-                </div>
-              </div>
-            </div>
-            <button
-              class="rounded-md py-2 px-4 border border-gray-400 font-medium w-fit mx-auto cursor-pointer hover:bg-gray-100"
-              type="submit"
-            >
-              Log In
-            </button>
-          </form>
-
-          <div>
-            <span>New to drive box?</span>
-            <a
-              class="hover:no-underline underline text-blue-400 hover:font-medium"
-              href="/register"
-              >Create account</a
-            >
+            <span data-field-msg="form"></span>
           </div>
-        </main>
+
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="userIdentifier"
+              class="text-sm font-medium text-gray-700"
+              >Username or Email</label
+            >
+            <input
+              type="text"
+              id="userIdentifier"
+              name="userIdentifier"
+              placeholder="Enter username or email"
+              autocomplete="username"
+              required
+              data-validity="default"
+              data-field-name="userIdentifier"
+              class="w-full py-2.5 px-3.5 rounded-lg border border-gray-200 bg-white text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all data-[validity='valid']:border-green-400 data-[validity='valid']:ring-1 data-[validity='valid']:ring-green-300 data-[validity='invalid']:border-red-400 data-[validity='invalid']:ring-1 data-[validity='invalid']:ring-red-200"
+            />
+            <span
+              data-field-msg="userIdentifier"
+              class="hidden text-xs text-red-600 mt-0.5"
+            ></span>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="password" class="text-sm font-medium text-gray-700"
+              >Password</label
+            >
+            <input
+              required
+              placeholder="••••••••"
+              autocomplete="current-password"
+              type="password"
+              name="password"
+              id="password"
+              data-validity="default"
+              data-field-name="password"
+              class="w-full py-2.5 px-3.5 rounded-lg border border-gray-200 bg-white text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all data-[validity='valid']:border-green-400 data-[validity='valid']:ring-1 data-[validity='valid']:ring-green-300 data-[validity='invalid']:border-red-400 data-[validity='invalid']:ring-1 data-[validity='invalid']:ring-red-200"
+            />
+            <span
+              data-field-msg="password"
+              class="hidden text-xs text-red-600 mt-0.5"
+            ></span>
+
+            <label
+              class="flex items-center gap-2 mt-1 cursor-pointer select-none w-fit"
+            >
+              <input
+                class="size-4 rounded border-gray-300 text-blue-600 cursor-pointer accent-blue-600"
+                type="checkbox"
+                name="toggle"
+                id="toggle"
+              />
+              <span class="text-sm text-gray-500">Show password</span>
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full mt-1 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-lg transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 cursor-pointer"
+          >
+            Sign in
+          </button>
+        </form>
+
+        <p class="text-sm text-center text-gray-500">
+          New to Drive Box?
+          <a
+            href="/register"
+            class="text-blue-600 font-medium hover:text-blue-700 hover:underline transition-colors"
+          >
+            Create an account
+          </a>
+        </p>
       </div>
     </div>
   </body>
