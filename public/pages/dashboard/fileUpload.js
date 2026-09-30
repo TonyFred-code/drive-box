@@ -30,7 +30,7 @@ const uploadResultsFailed = document.getElementById("upload-results-failed");
 
 function openFileUploadDialog() {
   dialogOpen(fileUploadDialog);
-  uploadBtn.disabled = true;
+  uploadBtn.disabled = uiState.selectedFiles.length === 0;
 }
 
 emptyUploadBtn?.addEventListener("click", openFileUploadDialog);
@@ -78,6 +78,7 @@ function removeFile(fileIndex) {
   if (uiState.selectedFiles.length === 0) {
     dialogClose(selectedFilesDialog);
     hideSelectedFilesOverview();
+    uploadBtn.disabled = true;
   }
 }
 
@@ -87,16 +88,12 @@ function displaySelectedFiles(files) {
   files.forEach((file, index) => {
     const fileItem = document.createElement("div");
     fileItem.className =
-      "flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-3 mb-2";
+      "flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-3 mb-2 gap-4";
 
-    const metaWrapper = document.createElement("div");
-    metaWrapper.className = "flex flex-col";
-
-    const nameSpan = document.createElement("span");
-    nameSpan.className =
+    const fileName = document.createElement("span");
+    fileName.className =
       "file-name font-medium text-gray-800 truncate max-w-[20rem]";
-    nameSpan.textContent = file.name;
-    metaWrapper.appendChild(nameSpan);
+    fileName.textContent = file.name;
 
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
@@ -109,7 +106,7 @@ function displaySelectedFiles(files) {
       removeFile(index);
     });
 
-    fileItem.appendChild(metaWrapper);
+    fileItem.appendChild(fileName);
     fileItem.appendChild(removeBtn);
     selectedFilesDetails.appendChild(fileItem);
   });
@@ -268,13 +265,18 @@ async function handleUploadFile(e) {
   }
 }
 
-removeAllFilesBtn?.addEventListener("click", () => {
+function resetFileUpload() {
   uiState.selectedFiles = [];
   displaySelectedFilesOverview(uiState.selectedFiles);
   displaySelectedFiles(uiState.selectedFiles);
   fileUploadInput.value = "";
-  dialogClose(selectedFilesDialog);
+  uploadBtn.disabled = true;
   fileList.classList.add("hidden");
+}
+
+removeAllFilesBtn?.addEventListener("click", () => {
+  dialogClose(selectedFilesDialog);
+  resetFileUpload();
 });
 
 // Submit the upload form with Enter when files are ready
@@ -288,3 +290,7 @@ fileUploadDialog?.addEventListener("keydown", (e) => {
 uploadResultsDialog?.addEventListener("close", () => window.location.reload());
 
 uploadForm?.addEventListener("submit", handleUploadFile);
+
+fileUploadDialog?.addEventListener("close", () => {
+  resetFileUpload();
+});
