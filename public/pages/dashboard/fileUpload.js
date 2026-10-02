@@ -1,5 +1,6 @@
 import { formatBytes } from "../../lib/dashboardUtils.js";
 import { dialogClose, dialogOpen } from "./dialog.js";
+import { handleUploadResult } from "./fileUploadDetails.js";
 import { currentDirectory, user } from "./serverData.js";
 import { uiState } from "./uiState.js";
 
@@ -22,11 +23,6 @@ const selectedFilesOverview = document.getElementById(
 const uploadErrorMsgElm = document.getElementById("upload-error-msg");
 const uploadErrorDetails = document.getElementById("upload-error-details");
 const uploadErrorDialog = document.getElementById("dialog-upload-error");
-
-const uploadResultsDialog = document.getElementById("dialog-upload-results");
-const uploadResultsSummary = document.getElementById("upload-results-summary");
-const uploadResultsStored = document.getElementById("upload-results-stored");
-const uploadResultsFailed = document.getElementById("upload-results-failed");
 
 function openFileUploadDialog() {
   dialogOpen(fileUploadDialog);
@@ -173,61 +169,6 @@ function handleUploadError(error, result = null) {
   dialogOpen(uploadErrorDialog);
 }
 
-function handleUploadResult(result) {
-  const successfulUploads = result.stored;
-  const failedUploads = result.failed;
-
-  const summaryText = ``;
-
-  uploadResultsSummary.textContent = summaryText;
-
-  uploadResultsStored.innerHTML = "";
-  const storedHeading = document.createElement("p");
-  storedHeading.className = "text-gray-700 mb-2";
-  storedHeading.innerHTML = "<strong>Stored:</strong>";
-  uploadResultsStored.appendChild(storedHeading);
-
-  const storedUl = document.createElement("ul");
-  storedUl.className = "space-y-1";
-  successfulUploads.forEach((f) => {
-    const li = document.createElement("li");
-    li.className = "flex flex-col";
-    const nameLine = document.createElement("p");
-    const nameLabel = document.createElement("strong");
-    nameLabel.textContent = f.originalName;
-    nameLine.append("Name: ", nameLabel);
-    li.appendChild(nameLine);
-    storedUl.appendChild(li);
-  });
-  uploadResultsStored.appendChild(storedUl);
-
-  uploadResultsFailed.innerHTML = "";
-  const failedHeading = document.createElement("p");
-  failedHeading.className = "text-gray-700 mb-2";
-  failedHeading.innerHTML = "<strong>Failed:</strong>";
-  uploadResultsFailed.appendChild(failedHeading);
-
-  const failedUl = document.createElement("ul");
-  failedUl.className = "space-y-1";
-  failedUploads.forEach((f) => {
-    const li = document.createElement("li");
-    li.className = "flex flex-col";
-    const nameLine = document.createElement("p");
-    const nameLabel = document.createElement("strong");
-    nameLabel.textContent = f.originalName;
-    nameLine.append("Name: ", nameLabel);
-    const reasonLine = document.createElement("p");
-    reasonLine.className = "text-gray-600";
-    reasonLine.textContent = `Reason: ${f.reason}`;
-    li.appendChild(nameLine);
-    li.appendChild(reasonLine);
-    failedUl.appendChild(li);
-  });
-  uploadResultsFailed.appendChild(failedUl);
-
-  dialogOpen(uploadResultsDialog);
-}
-
 async function handleUploadFile(e) {
   e.preventDefault();
   if (uiState.selectedFiles.length === 0) return;
@@ -255,6 +196,7 @@ async function handleUploadFile(e) {
     }
 
     if (data.success) {
+      dialogClose(fileUploadDialog);
       handleUploadResult(data.data);
     }
   } catch (error) {
@@ -286,8 +228,6 @@ fileUploadDialog?.addEventListener("keydown", (e) => {
     uploadForm.requestSubmit();
   }
 });
-
-uploadResultsDialog?.addEventListener("close", () => window.location.reload());
 
 uploadForm?.addEventListener("submit", handleUploadFile);
 
