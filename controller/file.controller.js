@@ -50,31 +50,50 @@ async function uploadMultipleFiles(req, res) {
       status = 403;
     }
 
-    return res.status(status).json({ success: false, error: [{ msg }] });
+    return res.status(status).json({
+      success: false,
+      error: [{ msg }],
+      data: {
+        stored: [],
+        failed:
+          files?.map((file) => ({
+            originalName: file.originalname,
+            reason: msg,
+          })) || [],
+      },
+    });
   }
 
   const uploadFileSize = files.reduce((acc, file) => acc + file.size, 0);
   if (uploadFileSize > user.storageQuota) {
+    const msg = `Upload size exceeds total storage limit. ${formatBytes(user.storageQuota)} total`;
     return res.status(400).json({
       success: false,
-      error: [
-        {
-          msg: `Upload size exceeds total storage limit. ${formatBytes(user.storageQuota)} total`,
-        },
-      ],
+      error: [{ msg }],
+      data: {
+        stored: [],
+        failed: files.map((file) => ({
+          originalName: file.originalname,
+          reason: msg,
+        })),
+      },
     });
   }
 
   const userFreeStorage = user.storageQuota - user.storageUsed;
 
   if (uploadFileSize > userFreeStorage) {
+    const msg = `Upload size exceeds available storage. ${formatBytes(userFreeStorage)} available`;
     return res.status(400).json({
       success: false,
-      error: [
-        {
-          msg: `Upload size exceeds available storage. ${formatBytes(userFreeStorage)} available`,
-        },
-      ],
+      error: [{ msg }],
+      data: {
+        stored: [],
+        failed: files.map((file) => ({
+          originalName: file.originalname,
+          reason: msg,
+        })),
+      },
     });
   }
 

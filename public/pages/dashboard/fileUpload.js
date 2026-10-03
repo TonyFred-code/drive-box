@@ -20,13 +20,11 @@ const selectedFilesDetails = document.getElementById("selected-files-details");
 const selectedFilesOverview = document.getElementById(
   "selected-files-overview"
 );
-const uploadErrorMsgElm = document.getElementById("upload-error-msg");
-const uploadErrorDetails = document.getElementById("upload-error-details");
-const uploadErrorDialog = document.getElementById("dialog-upload-error");
 
 function openFileUploadDialog() {
   dialogOpen(fileUploadDialog);
   uploadBtn.disabled = uiState.selectedFiles.length === 0;
+  uploadBtn.textContent = "upload";
 }
 
 emptyUploadBtn?.addEventListener("click", openFileUploadDialog);
@@ -125,50 +123,6 @@ viewSelectedFilesBtn?.addEventListener("click", () => {
   }
 });
 
-function handleUploadError(error, result = null) {
-  console.error("Error uploading files:", error);
-
-  if (error.length === 0) return;
-
-  const errorMsg =
-    error[0]?.msg || "Failed to upload all files. Please try again.";
-  uploadErrorMsgElm.textContent = errorMsg;
-
-  uploadErrorDetails.innerHTML = "";
-
-  if (result && Array.isArray(result.failed) && result.failed.length > 0) {
-    const heading = document.createElement("p");
-    heading.className = "text-gray-700 mb-2";
-    heading.innerHTML = "<strong>Failed Uploads:</strong>";
-    uploadErrorDetails.appendChild(heading);
-
-    const ul = document.createElement("ul");
-    ul.className = "space-y-1";
-
-    result.failed.forEach((f) => {
-      const li = document.createElement("li");
-      li.className = "flex flex-col";
-
-      const nameLine = document.createElement("p");
-      const nameLabel = document.createElement("strong");
-      nameLabel.textContent = f.originalName;
-      nameLine.append("Name: ", nameLabel);
-
-      const reasonLine = document.createElement("p");
-      reasonLine.className = "text-gray-600";
-      reasonLine.textContent = `Reason: ${f.reason}`;
-
-      li.appendChild(nameLine);
-      li.appendChild(reasonLine);
-      ul.appendChild(li);
-    });
-
-    uploadErrorDetails.appendChild(ul);
-  }
-
-  dialogOpen(uploadErrorDialog);
-}
-
 async function handleUploadFile(e) {
   e.preventDefault();
   if (uiState.selectedFiles.length === 0) return;
@@ -190,20 +144,40 @@ async function handleUploadFile(e) {
     });
     const data = await response.json();
 
-    if (!response.ok) {
-      handleUploadError(data.error, data?.data ?? null);
+    dialogClose(fileUploadDialog);
+
+    if (
+      data?.data &&
+      (Array.isArray(data.data.stored) || Array.isArray(data.data.failed))
+    ) {
+      handleUploadResult(data.data);
       return;
     }
 
-    if (data.success) {
-      dialogClose(fileUploadDialog);
-      handleUploadResult(data.data);
+    if (!response.ok) {
+      const errorMsg =
+        data?.error?.[0]?.msg || "Failed to upload files. Please try again.";
+      handleUploadResult({
+        stored: [],
+        failed: uiState.selectedFiles.map((file) => ({
+          originalName: file.name,
+          reason: errorMsg,
+        })),
+      });
+      return;
     }
+
+    throw new Error("Unexpected response format. Please try again.");
   } catch (error) {
-    handleUploadError(error);
+    handleUploadResult({
+      stored: [],
+      failed: uiState.selectedFiles.map((file) => ({
+        originalName: file.name,
+        reason: error.message || "Network error. Please try again.",
+      })),
+    });
   } finally {
-    uploadBtn.disabled = false;
-    uploadBtn.textContent = "Upload";
+    dialogClose(fileUploadDialog);
   }
 }
 
