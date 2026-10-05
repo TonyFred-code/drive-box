@@ -29,6 +29,8 @@ import {
   decrementUserStorageUsed,
   incrementUserStorageUsed,
 } from "../db/user.js";
+import { MAX_TOTAL_SIZE } from "../constants/fileConstants.js";
+import { ALLOWED_MIME_TYPES } from "../constants/allowedFileMimeTypes.js";
 
 async function uploadMultipleFiles(req, res) {
   const files = req.files;
@@ -52,14 +54,14 @@ async function uploadMultipleFiles(req, res) {
 
     return res.status(status).json({
       success: false,
-      error: [{ msg }],
       data: {
         stored: [],
         failed:
           files?.map((file) => ({
             originalName: file.originalname,
-            reason: msg,
+            reason: "Upload rejected. Check error details for more information",
           })) || [],
+        msg,
       },
     });
   }
@@ -69,13 +71,13 @@ async function uploadMultipleFiles(req, res) {
     const msg = `Upload size exceeds total storage limit. ${formatBytes(user.storageQuota)} total`;
     return res.status(400).json({
       success: false,
-      error: [{ msg }],
       data: {
         stored: [],
         failed: files.map((file) => ({
           originalName: file.originalname,
-          reason: msg,
+          reason: "Upload rejected. Exceeds total storage",
         })),
+        msg,
       },
     });
   }
@@ -86,13 +88,13 @@ async function uploadMultipleFiles(req, res) {
     const msg = `Upload size exceeds available storage. ${formatBytes(userFreeStorage)} available`;
     return res.status(400).json({
       success: false,
-      error: [{ msg }],
       data: {
         stored: [],
         failed: files.map((file) => ({
           originalName: file.originalname,
-          reason: msg,
+          reason: "Upload rejected. Exceeds available storage",
         })),
+        msg,
       },
     });
   }
@@ -101,6 +103,22 @@ async function uploadMultipleFiles(req, res) {
   const preflightFailed = [];
 
   for (const file of files) {
+    if (file.size > MAX_TOTAL_SIZE) {
+      preflightFailed.push({
+        originalName: file.originalname,
+        reason: `File size exceeds maximum allowed size of ${formatBytes(MAX_TOTAL_SIZE)}`,
+      });
+      continue;
+    }
+
+    if (!ALLOWED_MIME_TYPES.has(file.mimetype)) {
+      preflightFailed.push({
+        originalName: file.originalname,
+        reason: `"${file.originalname}" is not an allowed file type.`,
+      });
+      continue;
+    }
+
     const fileNameWithoutExt = extractFileNameWithoutExt(file.originalname);
     const fileNameValid = validateFileDisplayName(
       fileNameWithoutExt,
@@ -133,8 +151,11 @@ async function uploadMultipleFiles(req, res) {
   if (placeholders.length === 0) {
     return res.status(400).json({
       success: false,
-      error: [{ msg: "All files were rejected before upload" }],
-      data: { stored: [], failed: preflightFailed },
+      data: {
+        stored: [],
+        failed: preflightFailed,
+        msg: "All files failed to upload",
+      },
     });
   }
 
@@ -214,15 +235,17 @@ async function uploadMultipleFiles(req, res) {
   if (stored.length === 0) {
     return res.status(500).json({
       success: false,
-      error: [{ msg: "All files failed to upload" }],
-      data: { stored: [], failed },
+      data: { stored: [], failed, msg: "All files failed to upload" },
     });
   }
 
   return res.status(200).json({
     success: true,
-    msg: `${stored.length} file(s) uploaded successfully`,
-    data: { stored, failed },
+    data: {
+      stored,
+      failed,
+      msg: `${stored.length} file(s) uploaded successfully`,
+    },
   });
 }
 

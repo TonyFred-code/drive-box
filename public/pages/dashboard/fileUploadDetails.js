@@ -7,6 +7,7 @@ const uploadResultsStatusIcon = document.getElementById(
 const uploadResultsSummary = document.getElementById("upload-results-summary");
 const uploadResultsStored = document.getElementById("upload-results-stored");
 const uploadResultsFailed = document.getElementById("upload-results-failed");
+const uploadResultsMsg = document.getElementById("upload-results-msg");
 const uploadResultsStoredContainer = document.getElementById(
   "upload-results-stored-container"
 );
@@ -76,12 +77,20 @@ failedTabBtn?.addEventListener("click", showFailed);
 function handleUploadResult(result) {
   const successfulUploads = Array.isArray(result?.stored) ? result.stored : [];
   const failedUploads = Array.isArray(result?.failed) ? result.failed : [];
+  const msg = result?.msg || "";
 
   hasSuccessfulUploads = successfulUploads.length > 0;
   currentFailedCount = failedUploads.length;
 
   succeededCountBadge.textContent = String(successfulUploads.length);
   failedCountBadge.textContent = String(failedUploads.length);
+
+  if (msg) {
+    uploadResultsMsg.textContent = msg;
+    uploadResultsMsg.classList.remove("hidden");
+  } else {
+    uploadResultsMsg.classList.add("hidden");
+  }
 
   // Status icon and summary header
   if (failedUploads.length === 0) {

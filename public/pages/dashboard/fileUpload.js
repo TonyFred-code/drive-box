@@ -141,28 +141,44 @@ async function handleUploadFile(e) {
     const response = await fetch("/files/upload", {
       method: "POST",
       body: formData,
+      headers: {
+        Accept: "application/json",
+      },
     });
     const data = await response.json();
-
-    dialogClose(fileUploadDialog);
 
     if (
       data?.data &&
       (Array.isArray(data.data.stored) || Array.isArray(data.data.failed))
     ) {
-      handleUploadResult(data.data);
+      const stored = data.data.stored || [];
+      let failed = data.data.failed || [];
+      const msg = data.data.msg || "";
+
+      if (
+        stored.length === 0 &&
+        failed.length === 0 &&
+        uiState.selectedFiles.length > 0
+      ) {
+        failed = uiState.selectedFiles.map((file) => ({
+          originalName: file.name,
+          reason: "Upload rejected",
+        }));
+      }
+
+      handleUploadResult({ stored, failed, msg });
       return;
     }
 
     if (!response.ok) {
-      const errorMsg =
-        data?.error?.[0]?.msg || "Failed to upload files. Please try again.";
+      const errorMsg = data?.msg || "Failed to upload files. Please try again.";
       handleUploadResult({
         stored: [],
         failed: uiState.selectedFiles.map((file) => ({
           originalName: file.name,
-          reason: errorMsg,
+          reason: "Upload failed.",
         })),
+        msg: errorMsg,
       });
       return;
     }
