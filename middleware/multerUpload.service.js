@@ -19,7 +19,7 @@ function getMulterErrorMessage(err) {
       return `Too many files selected. Maximum allowed is ${MAX_FILES_COUNT_PER_UPLOAD} files per upload.`;
 
     case "LIMIT_FILE_SIZE":
-      return `File size exceeds the maximum limit of ${formatBytes(MAX_TOTAL_SIZE * 10)}.`;
+      return `One or more files size exceeds the maximum limit of ${formatBytes(MAX_TOTAL_SIZE)}. Maximum of ${formatBytes(MAX_TOTAL_SIZE)} per upload is allowed.`;
 
     case "LIMIT_PART_COUNT":
       return "Upload rejected: Too many parts in multipart request.";

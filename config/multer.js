@@ -9,7 +9,7 @@ import {
 const multerUpload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: MAX_TOTAL_SIZE * 10, // Prevent malicious DoS attacks
+    fileSize: MAX_TOTAL_SIZE, // Prevent malicious DoS attacks
   },
 });
 
