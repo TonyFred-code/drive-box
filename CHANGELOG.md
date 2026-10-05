@@ -49,3 +49,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Added
 
 - Ensured user can add more files to selected files.
+
+## [1.4.0] - 2026010-05
+
+### Added
+
+- Included client-side validation for file upload
