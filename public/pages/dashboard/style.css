@@ -12,10 +12,6 @@
   & dialog.app-dialog[open] {
     opacity: 1;
     transform: scale(1) translateY(0);
-
-    & button {
-      @apply capitalize cursor-pointer;
-    }
   }
 
   @starting-style {
