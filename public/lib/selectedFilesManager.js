@@ -1,5 +1,6 @@
 import {
   MAX_FILE_SIZE,
+  MAX_FILENAME_LENGTH,
   MAX_FILES_COUNT_PER_UPLOAD,
   MAX_TOTAL_UPLOAD_SIZE,
 } from "../constants/dashboardConstants.js";
@@ -81,10 +82,14 @@ class SelectedFilesManager {
     for (const item of this.items) {
       const { file } = item;
       const stem = extractFileNameWithoutExt(file.name);
+      const fullName = file.name.trim();
       const nameValidation = validateFileName(stem);
       const duplicates = nameGroups.get(file.name) || [];
 
-      if (file.size > MAX_FILE_SIZE) {
+      if (fullName.length > MAX_FILENAME_LENGTH) {
+        item.isValid = false;
+        item.error = `File name "${file.name}" exceeds the maximum allowed length of ${MAX_FILENAME_LENGTH} characters.`;
+      } else if (file.size > MAX_FILE_SIZE) {
         item.isValid = false;
         item.error = `File size (${formatBytes(file.size)}) exceeds the maximum allowed limit of ${formatBytes(MAX_FILE_SIZE)}.`;
       } else if (!nameValidation.valid) {
