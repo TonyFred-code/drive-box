@@ -108,7 +108,6 @@ function displaySelectedFiles(items) {
       e.stopPropagation();
       uiState.selectedFilesManager.removeById(item.id);
       displaySelectedFiles(uiState.selectedFilesManager.items);
-      displaySelectedFilesOverview();
       uploadBtn.disabled = uiState.selectedFilesManager.isEmpty();
 
       if (!uiState.selectedFilesManager.hasErrors) {
@@ -124,6 +123,8 @@ function displaySelectedFiles(items) {
       if (uiState.selectedFilesManager.isEmpty()) {
         dialogClose(selectedFilesDialog);
         hideSelectedFilesOverview();
+      } else {
+        displaySelectedFilesOverview();
       }
     });
 
@@ -150,7 +151,7 @@ fileUploadInput?.addEventListener("change", () => {
         uiState.selectedFilesManager.batchError ||
         `${uiState.selectedFilesManager.invalidCount} file(s) have errors.`;
       showWarningBanner(reason);
-      updateBtn.disabled = true;
+      uploadBtn.disabled = true;
     } else {
       hideWarningBanner();
     }
@@ -315,6 +316,6 @@ selectedFilesDialog?.addEventListener("close", () => {
     uploadBtn.disabled = true;
   } else {
     hideWarningBanner();
-    uploadBtn.disabled = false;
+    uploadBtn.disabled = uiState.selectedFilesManager.isEmpty();
   }
 });
