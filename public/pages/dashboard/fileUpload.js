@@ -171,7 +171,8 @@ async function handleUploadFile(e) {
     }
 
     if (!response.ok) {
-      const errorMsg = data?.msg || "Failed to upload files. Please try again.";
+      const errorMsg =
+        data?.error?.[0]?.msg || "Failed to upload files. Please try again.";
       handleUploadResult({
         stored: [],
         failed: uiState.selectedFiles.map((file) => ({
