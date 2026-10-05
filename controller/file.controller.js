@@ -67,6 +67,22 @@ async function uploadMultipleFiles(req, res) {
   }
 
   const uploadFileSize = files.reduce((acc, file) => acc + file.size, 0);
+
+  if (uploadFileSize > MAX_TOTAL_SIZE) {
+    const msg = `Upload size exceeds maximum allowed size of ${formatBytes(MAX_TOTAL_SIZE)}. Maximum of ${formatBytes(MAX_TOTAL_SIZE)} per upload is allowed.`;
+    return res.status(400).json({
+      success: false,
+      data: {
+        stored: [],
+        failed: files.map((file) => ({
+          originalName: file.originalname,
+          reason: "Upload rejected. Exceeds maximum allowed size",
+        })),
+        msg,
+      },
+    });
+  }
+
   if (uploadFileSize > user.storageQuota) {
     const msg = `Upload size exceeds total storage limit. ${formatBytes(user.storageQuota)} total`;
     return res.status(400).json({
