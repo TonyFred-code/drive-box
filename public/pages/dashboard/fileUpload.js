@@ -108,7 +108,10 @@ function displaySelectedFiles(files) {
 
 fileUploadInput?.addEventListener("change", () => {
   if (fileUploadInput.files && fileUploadInput.files.length > 0) {
-    uiState.selectedFiles = Array.from(fileUploadInput.files);
+    uiState.selectedFiles = [
+      ...uiState.selectedFiles,
+      ...Array.from(fileUploadInput.files),
+    ];
     displaySelectedFilesOverview(uiState.selectedFiles);
   }
 
@@ -116,8 +119,7 @@ fileUploadInput?.addEventListener("change", () => {
 });
 
 viewSelectedFilesBtn?.addEventListener("click", () => {
-  if (fileUploadInput.files && fileUploadInput.files.length > 0) {
-    uiState.selectedFiles = Array.from(fileUploadInput.files);
+  if (uiState.selectedFiles && uiState.selectedFiles.length > 0) {
     displaySelectedFiles(uiState.selectedFiles);
     dialogOpen(selectedFilesDialog);
   }

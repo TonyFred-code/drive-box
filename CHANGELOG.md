@@ -45,3 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated file upload response structure to allow viewing the upload result (success/failed) in one
   tabbed-view dialog
+
+## Added
+
+- Ensured user can add more files to selected files.
