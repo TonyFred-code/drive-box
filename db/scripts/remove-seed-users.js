@@ -7,6 +7,19 @@ const emailsToRemove = [
 ];
 
 async function main() {
+  // Manual deletion of seeded user files from storage is required
+  const userFiles = await prisma.file.deleteMany({
+    where: {
+      user: {
+        email: {
+          in: emailsToRemove,
+        },
+      },
+    },
+  });
+
+  console.log(`Removed ${userFiles.count} user files successfully.`);
+
   const result = await prisma.user.deleteMany({
     where: {
       email: {
