@@ -1,5 +1,6 @@
 import { formatBytes } from "../../lib/dashboardUtils.js";
 import { dialogClose, dialogOpen } from "./dialog.js";
+import { handleUploadResult } from "./fileUploadDetails.js";
 import { currentDirectory, user } from "./serverData.js";
 import { uiState } from "./uiState.js";
 
@@ -19,18 +20,11 @@ const selectedFilesDetails = document.getElementById("selected-files-details");
 const selectedFilesOverview = document.getElementById(
   "selected-files-overview"
 );
-const uploadErrorMsgElm = document.getElementById("upload-error-msg");
-const uploadErrorDetails = document.getElementById("upload-error-details");
-const uploadErrorDialog = document.getElementById("dialog-upload-error");
-
-const uploadResultsDialog = document.getElementById("dialog-upload-results");
-const uploadResultsSummary = document.getElementById("upload-results-summary");
-const uploadResultsStored = document.getElementById("upload-results-stored");
-const uploadResultsFailed = document.getElementById("upload-results-failed");
 
 function openFileUploadDialog() {
   dialogOpen(fileUploadDialog);
   uploadBtn.disabled = uiState.selectedFiles.length === 0;
+  uploadBtn.textContent = "upload";
 }
 
 emptyUploadBtn?.addEventListener("click", openFileUploadDialog);
@@ -114,7 +108,10 @@ function displaySelectedFiles(files) {
 
 fileUploadInput?.addEventListener("change", () => {
   if (fileUploadInput.files && fileUploadInput.files.length > 0) {
-    uiState.selectedFiles = Array.from(fileUploadInput.files);
+    uiState.selectedFiles = [
+      ...uiState.selectedFiles,
+      ...Array.from(fileUploadInput.files),
+    ];
     displaySelectedFilesOverview(uiState.selectedFiles);
   }
 
@@ -122,111 +119,11 @@ fileUploadInput?.addEventListener("change", () => {
 });
 
 viewSelectedFilesBtn?.addEventListener("click", () => {
-  if (fileUploadInput.files && fileUploadInput.files.length > 0) {
-    uiState.selectedFiles = Array.from(fileUploadInput.files);
+  if (uiState.selectedFiles && uiState.selectedFiles.length > 0) {
     displaySelectedFiles(uiState.selectedFiles);
     dialogOpen(selectedFilesDialog);
   }
 });
-
-function handleUploadError(error, result = null) {
-  console.error("Error uploading files:", error);
-
-  if (error.length === 0) return;
-
-  const errorMsg =
-    error[0]?.msg || "Failed to upload all files. Please try again.";
-  uploadErrorMsgElm.textContent = errorMsg;
-
-  uploadErrorDetails.innerHTML = "";
-
-  if (result && Array.isArray(result.failed) && result.failed.length > 0) {
-    const heading = document.createElement("p");
-    heading.className = "text-gray-700 mb-2";
-    heading.innerHTML = "<strong>Failed Uploads:</strong>";
-    uploadErrorDetails.appendChild(heading);
-
-    const ul = document.createElement("ul");
-    ul.className = "space-y-1";
-
-    result.failed.forEach((f) => {
-      const li = document.createElement("li");
-      li.className = "flex flex-col";
-
-      const nameLine = document.createElement("p");
-      const nameLabel = document.createElement("strong");
-      nameLabel.textContent = f.originalName;
-      nameLine.append("Name: ", nameLabel);
-
-      const reasonLine = document.createElement("p");
-      reasonLine.className = "text-gray-600";
-      reasonLine.textContent = `Reason: ${f.reason}`;
-
-      li.appendChild(nameLine);
-      li.appendChild(reasonLine);
-      ul.appendChild(li);
-    });
-
-    uploadErrorDetails.appendChild(ul);
-  }
-
-  dialogOpen(uploadErrorDialog);
-}
-
-function handleUploadResult(result) {
-  const successfulUploads = result.stored;
-  const failedUploads = result.failed;
-
-  const summaryText = ``;
-
-  uploadResultsSummary.textContent = summaryText;
-
-  uploadResultsStored.innerHTML = "";
-  const storedHeading = document.createElement("p");
-  storedHeading.className = "text-gray-700 mb-2";
-  storedHeading.innerHTML = "<strong>Stored:</strong>";
-  uploadResultsStored.appendChild(storedHeading);
-
-  const storedUl = document.createElement("ul");
-  storedUl.className = "space-y-1";
-  successfulUploads.forEach((f) => {
-    const li = document.createElement("li");
-    li.className = "flex flex-col";
-    const nameLine = document.createElement("p");
-    const nameLabel = document.createElement("strong");
-    nameLabel.textContent = f.originalName;
-    nameLine.append("Name: ", nameLabel);
-    li.appendChild(nameLine);
-    storedUl.appendChild(li);
-  });
-  uploadResultsStored.appendChild(storedUl);
-
-  uploadResultsFailed.innerHTML = "";
-  const failedHeading = document.createElement("p");
-  failedHeading.className = "text-gray-700 mb-2";
-  failedHeading.innerHTML = "<strong>Failed:</strong>";
-  uploadResultsFailed.appendChild(failedHeading);
-
-  const failedUl = document.createElement("ul");
-  failedUl.className = "space-y-1";
-  failedUploads.forEach((f) => {
-    const li = document.createElement("li");
-    li.className = "flex flex-col";
-    const nameLine = document.createElement("p");
-    const nameLabel = document.createElement("strong");
-    nameLabel.textContent = f.originalName;
-    nameLine.append("Name: ", nameLabel);
-    const reasonLine = document.createElement("p");
-    reasonLine.className = "text-gray-600";
-    reasonLine.textContent = `Reason: ${f.reason}`;
-    li.appendChild(nameLine);
-    li.appendChild(reasonLine);
-    failedUl.appendChild(li);
-  });
-  uploadResultsFailed.appendChild(failedUl);
-
-  dialogOpen(uploadResultsDialog);
-}
 
 async function handleUploadFile(e) {
   e.preventDefault();
@@ -246,22 +143,60 @@ async function handleUploadFile(e) {
     const response = await fetch("/files/upload", {
       method: "POST",
       body: formData,
+      headers: {
+        Accept: "application/json",
+      },
     });
     const data = await response.json();
 
-    if (!response.ok) {
-      handleUploadError(data.error, data?.data ?? null);
+    if (
+      data?.data &&
+      (Array.isArray(data.data.stored) || Array.isArray(data.data.failed))
+    ) {
+      const stored = data.data.stored || [];
+      let failed = data.data.failed || [];
+      const msg = data.data.msg || "";
+
+      if (
+        stored.length === 0 &&
+        failed.length === 0 &&
+        uiState.selectedFiles.length > 0
+      ) {
+        failed = uiState.selectedFiles.map((file) => ({
+          originalName: file.name,
+          reason: "Upload rejected",
+        }));
+      }
+
+      handleUploadResult({ stored, failed, msg });
       return;
     }
 
-    if (data.success) {
-      handleUploadResult(data.data);
+    if (!response.ok) {
+      const errorMsg =
+        data?.error?.[0]?.msg || "Failed to upload files. Please try again.";
+      handleUploadResult({
+        stored: [],
+        failed: uiState.selectedFiles.map((file) => ({
+          originalName: file.name,
+          reason: "Upload failed.",
+        })),
+        msg: errorMsg,
+      });
+      return;
     }
+
+    throw new Error("Unexpected response format. Please try again.");
   } catch (error) {
-    handleUploadError(error);
+    handleUploadResult({
+      stored: [],
+      failed: uiState.selectedFiles.map((file) => ({
+        originalName: file.name,
+        reason: error.message || "Network error. Please try again.",
+      })),
+    });
   } finally {
-    uploadBtn.disabled = false;
-    uploadBtn.textContent = "Upload";
+    dialogClose(fileUploadDialog);
   }
 }
 
@@ -286,8 +221,6 @@ fileUploadDialog?.addEventListener("keydown", (e) => {
     uploadForm.requestSubmit();
   }
 });
-
-uploadResultsDialog?.addEventListener("close", () => window.location.reload());
 
 uploadForm?.addEventListener("submit", handleUploadFile);
 

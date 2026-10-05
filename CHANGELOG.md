@@ -38,3 +38,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved user interface of register and login pages
 - Corrected size of sandbox declared in landing page
+
+## [1.3.0] - 2026-10-05
+
+### Changed
+
+- Updated file upload response structure to allow viewing the upload result (success/failed) in one
+  tabbed-view dialog
+
+## Added
+
+- Ensured user can add more files to selected files.

@@ -406,43 +406,89 @@
       </div>
     </dialog>
 
-    <dialog id="dialog-upload-error" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
-      <div class="p-4 flex flex-col gap-5 max-h-[75vh]">
-        <h3 class="text-lg font-bold text-gray-900">Upload failed</h3>
-        <p id="upload-error-msg" class="text-gray-600 italic text-sm" ></p>
-
-        <div id="upload-error-details" class="space-y-2 overflow-y-auto flex-1">
-
+    <!-- Upload results dialog -->
+    <dialog id="dialog-upload-results" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-md w-11/12 fixed inset-0 m-auto" data-active-tab="succeeded">
+      <div class="p-6 flex flex-col gap-4 max-h-[80vh]">
+        <!-- Header -->
+        <div class="flex items-center gap-3">
+          <div id="upload-results-status-icon" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"></div>
+          <div class="min-w-0 flex-1">
+            <h3 class="text-lg font-bold text-gray-900 leading-snug">Upload Results</h3>
+            <p id="upload-results-summary" class="text-sm text-gray-500 mt-0.5 truncate"></p>
+          </div>
         </div>
-        <div class="flex gap-2 justify-end pt-2">
-          <button type="button" class="dialog-cancel-btn px-5 py-2 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer">
-            Close
+
+        <p id="upload-results-msg" class="text-sm text-gray-500"></p>
+
+        <!-- Segmented Tab Controls -->
+        <div class="bg-gray-100 p-1 rounded-xl flex gap-1" role="tablist" aria-label="Upload results tabs">
+          <button
+            type="button"
+            id="succeeded-tab-btn"
+            role="tab"
+            aria-selected="true"
+            aria-controls="upload-results-stored-container"
+            tabindex="0"
+            class="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+          >
+            <span>Succeeded</span>
+            <span id="succeeded-count-badge" class="px-1.5 py-0.5 rounded-full text-xs font-bold leading-none">0</span>
+          </button>
+          <button
+            type="button"
+            id="failed-tab-btn"
+            role="tab"
+            aria-selected="false"
+            aria-controls="upload-results-failed-container"
+            tabindex="-1"
+            class="flex-1 py-1.5 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+          >
+            <span>Failed</span>
+            <span id="failed-count-badge" class="px-1.5 py-0.5 rounded-full text-xs font-medium leading-none">0</span>
           </button>
         </div>
-      </div>
-    </dialog>
 
-    <!-- Mixed results: some succeeded, some failed -->
-    <dialog id="dialog-upload-results" class="app-dialog rounded-2xl p-0 bg-white shadow-2xl backdrop:bg-black/40 max-w-sm w-10/12 fixed inset-0 m-auto">
-      <div class="p-5 flex flex-col gap-5">
-        <div>
-          <h3 class="text-lg font-bold text-gray-900">Upload results</h3>
-          <p id="upload-results-summary" class="text-sm text-gray-500 mt-0.5"></p>
+        <!-- Content Area -->
+        <div class="space-y-2 overflow-y-auto flex-1 min-h-[140px] max-h-60 pr-0.5">
+          <!-- Succeeded section -->
+          <div
+            id="upload-results-stored-container"
+            role="tabpanel"
+            aria-labelledby="succeeded-tab-btn"
+            tabindex="0"
+            class="space-y-2 focus:outline-none"
+          >
+            <ul id="upload-results-stored" class="space-y-1.5"></ul>
+            <div id="upload-results-stored-empty" class="hidden py-8 flex flex-col items-center justify-center text-center">
+              <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mb-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+              </div>
+              <p class="text-sm font-semibold text-gray-700">No successful uploads</p>
+              <p class="text-xs text-gray-500 mt-0.5">None of the selected files were stored.</p>
+            </div>
+          </div>
+
+          <!-- Failed section -->
+          <div
+            id="upload-results-failed-container"
+            role="tabpanel"
+            aria-labelledby="failed-tab-btn"
+            tabindex="0"
+            class="hidden space-y-2 focus:outline-none"
+          >
+            <ul id="upload-results-failed" class="space-y-1.5"></ul>
+            <div id="upload-results-failed-empty" class="hidden py-8 flex flex-col items-center justify-center text-center">
+              <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              </div>
+              <p class="text-sm font-semibold text-gray-700">No failed uploads</p>
+              <p class="text-xs text-gray-500 mt-0.5">All files were uploaded without any issues.</p>
+            </div>
+          </div>
         </div>
 
-        <!-- Succeeded section -->
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-green-700 mb-2">Succeeded</p>
-          <ul id="upload-results-stored" class="space-y-1 max-h-36 overflow-y-auto text-sm text-gray-700"></ul>
-        </div>
-
-        <!-- Failed section -->
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-red-600 mb-2">Failed</p>
-          <ul id="upload-results-failed" class="space-y-1 max-h-36 overflow-y-auto text-sm text-gray-700"></ul>
-        </div>
-
-        <div class="flex gap-2 justify-end pt-1">
+        <!-- Footer -->
+        <div class="flex gap-2 justify-end pt-2 border-t border-gray-100">
           <button type="button" id="upload-results-close-btn" class="dialog-cancel-btn px-5 py-2 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer">
             Close
           </button>

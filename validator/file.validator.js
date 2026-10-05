@@ -24,22 +24,6 @@ const fileUploadRules = [
       );
     }
 
-    for (const file of req.files) {
-      if (file.size > MAX_TOTAL_SIZE) {
-        throw new Error(
-          `Maximum individual file size is ${formatBytes(MAX_TOTAL_SIZE)}`
-        );
-      }
-    }
-
-    const totalBytes = req.files.reduce((sum, file) => sum + file.size, 0);
-
-    if (totalBytes > MAX_TOTAL_SIZE) {
-      throw new Error(
-        `Total upload size exceeds ${formatBytes(MAX_TOTAL_SIZE)} limit. Received: ${formatBytes(totalBytes)}`
-      );
-    }
-
     return true;
   }),
 ];
