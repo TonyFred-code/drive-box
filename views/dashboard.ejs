@@ -421,10 +421,14 @@
         <p id="upload-results-msg" class="text-sm text-gray-500"></p>
 
         <!-- Segmented Tab Controls -->
-        <div class="bg-gray-100 p-1 rounded-xl flex gap-1">
+        <div class="bg-gray-100 p-1 rounded-xl flex gap-1" role="tablist" aria-label="Upload results tabs">
           <button
             type="button"
             id="succeeded-tab-btn"
+            role="tab"
+            aria-selected="true"
+            aria-controls="upload-results-stored-container"
+            tabindex="0"
             class="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
           >
             <span>Succeeded</span>
@@ -433,6 +437,10 @@
           <button
             type="button"
             id="failed-tab-btn"
+            role="tab"
+            aria-selected="false"
+            aria-controls="upload-results-failed-container"
+            tabindex="-1"
             class="flex-1 py-1.5 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
           >
             <span>Failed</span>
@@ -443,7 +451,13 @@
         <!-- Content Area -->
         <div class="space-y-2 overflow-y-auto flex-1 min-h-[140px] max-h-60 pr-0.5">
           <!-- Succeeded section -->
-          <div id="upload-results-stored-container" class="space-y-2">
+          <div
+            id="upload-results-stored-container"
+            role="tabpanel"
+            aria-labelledby="succeeded-tab-btn"
+            tabindex="0"
+            class="space-y-2 focus:outline-none"
+          >
             <ul id="upload-results-stored" class="space-y-1.5"></ul>
             <div id="upload-results-stored-empty" class="hidden py-8 flex flex-col items-center justify-center text-center">
               <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mb-2">
@@ -455,7 +469,13 @@
           </div>
 
           <!-- Failed section -->
-          <div id="upload-results-failed-container" class="hidden space-y-2">
+          <div
+            id="upload-results-failed-container"
+            role="tabpanel"
+            aria-labelledby="failed-tab-btn"
+            tabindex="0"
+            class="hidden space-y-2 focus:outline-none"
+          >
             <ul id="upload-results-failed" class="space-y-1.5"></ul>
             <div id="upload-results-failed-empty" class="hidden py-8 flex flex-col items-center justify-center text-center">
               <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">

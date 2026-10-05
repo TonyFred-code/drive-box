@@ -36,22 +36,30 @@ function updateTabButtons(activeTab) {
 
   if (activeTab === "succeeded") {
     succeededTabBtn.className = activeClass;
+    succeededTabBtn.setAttribute("aria-selected", "true");
+    succeededTabBtn.tabIndex = 0;
     succeededCountBadge.className =
       "px-1.5 py-0.5 rounded-full text-xs font-bold leading-none bg-emerald-100 text-emerald-800";
 
     failedTabBtn.className = inactiveClass;
+    failedTabBtn.setAttribute("aria-selected", "false");
+    failedTabBtn.tabIndex = -1;
     failedCountBadge.className =
       currentFailedCount > 0
         ? "px-1.5 py-0.5 rounded-full text-xs font-bold leading-none bg-red-100 text-red-700"
         : "px-1.5 py-0.5 rounded-full text-xs font-medium leading-none bg-gray-200 text-gray-600";
   } else {
     failedTabBtn.className = activeClass;
+    failedTabBtn.setAttribute("aria-selected", "true");
+    failedTabBtn.tabIndex = 0;
     failedCountBadge.className =
       currentFailedCount > 0
         ? "px-1.5 py-0.5 rounded-full text-xs font-bold leading-none bg-red-100 text-red-700"
         : "px-1.5 py-0.5 rounded-full text-xs font-medium leading-none bg-gray-200 text-gray-600";
 
     succeededTabBtn.className = inactiveClass;
+    succeededTabBtn.setAttribute("aria-selected", "false");
+    succeededTabBtn.tabIndex = -1;
     succeededCountBadge.className =
       "px-1.5 py-0.5 rounded-full text-xs font-medium leading-none bg-gray-200 text-gray-600";
   }
@@ -73,6 +81,21 @@ function showFailed() {
 
 succeededTabBtn?.addEventListener("click", showStored);
 failedTabBtn?.addEventListener("click", showFailed);
+
+[succeededTabBtn, failedTabBtn].forEach((btn) => {
+  btn?.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      if (btn === succeededTabBtn) {
+        showFailed();
+        failedTabBtn?.focus();
+      } else {
+        showStored();
+        succeededTabBtn?.focus();
+      }
+    }
+  });
+});
 
 function handleUploadResult(result) {
   const successfulUploads = Array.isArray(result?.stored) ? result.stored : [];
