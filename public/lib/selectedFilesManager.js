@@ -51,8 +51,8 @@ class SelectedFilesManager {
    * Removes all invalid files in one click.
    */
   removeInvalid() {
-    this.revalidate();
     this.items = this.items.filter((item) => item.isValid);
+    this.revalidate();
   }
 
   /**
