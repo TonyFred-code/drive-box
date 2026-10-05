@@ -50,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ensured user can add more files to selected files.
 
-## [1.4.0] - 2026010-05
+## [1.4.0] - 2026-10-05
 
 ### Added
 
