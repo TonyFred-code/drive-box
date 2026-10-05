@@ -1,5 +1,7 @@
+import { SelectedFilesManager } from "../../lib/selectedFilesManager.js";
+
 const uiState = {
-  selectedFiles: [],
+  selectedFilesManager: new SelectedFilesManager(),
   activeContextMenuFile: null,
   activeContextMenuFolder: null,
   dialogOpenOrder: [],

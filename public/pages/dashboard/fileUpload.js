@@ -20,21 +20,23 @@ const selectedFilesDetails = document.getElementById("selected-files-details");
 const selectedFilesOverview = document.getElementById(
   "selected-files-overview"
 );
+const uploadWarningBanner = document.getElementById("upload-warning-banner");
+const clearInvalidBtn = document.getElementById("clear-invalid");
 
 function openFileUploadDialog() {
   dialogOpen(fileUploadDialog);
-  uploadBtn.disabled = uiState.selectedFiles.length === 0;
-  uploadBtn.textContent = "upload";
+  uploadBtn.disabled = uiState.selectedFilesManager.isEmpty();
+  uploadBtn.textContent = "Upload";
 }
 
 emptyUploadBtn?.addEventListener("click", openFileUploadDialog);
 menuUploadBtn?.addEventListener("click", openFileUploadDialog);
 
-function displaySelectedFilesOverview(files) {
+function displaySelectedFilesOverview() {
   selectedFilesOverview.innerHTML = "";
 
-  const totalFiles = files.length;
-  const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+  const totalFiles = uiState.selectedFilesManager.count;
+  const totalSize = uiState.selectedFilesManager.totalSize;
 
   selectedFilesOverview.innerHTML = `
     <div class="space-y-2">
@@ -49,7 +51,6 @@ function displaySelectedFilesOverview(files) {
     </div>
   `;
 
-  viewSelectedFilesBtn.disabled = files.length === 0;
   fileList.classList.remove("hidden");
 }
 
@@ -58,85 +59,144 @@ function hideSelectedFilesOverview() {
   fileList.classList.add("hidden");
 }
 
-function removeFile(fileIndex) {
-  if (!uiState.selectedFiles[fileIndex]) return;
-
-  uiState.selectedFiles.splice(fileIndex, 1);
-  displaySelectedFilesOverview(uiState.selectedFiles);
-  displaySelectedFiles(uiState.selectedFiles);
-
-  const dt = new DataTransfer();
-  uiState.selectedFiles.forEach((file) => dt.items.add(file));
-  fileUploadInput.files = dt.files;
-
-  if (uiState.selectedFiles.length === 0) {
-    dialogClose(selectedFilesDialog);
-    hideSelectedFilesOverview();
-    uploadBtn.disabled = true;
-  }
-}
-
-function displaySelectedFiles(files) {
+function displaySelectedFiles(items) {
   selectedFilesDetails.innerHTML = "";
 
-  files.forEach((file, index) => {
+  items.forEach((item) => {
     const fileItem = document.createElement("div");
-    fileItem.className =
-      "flex items-center justify-between bg-white border border-gray-200 rounded-lg shadow-sm p-3 mb-2 gap-4";
+    fileItem.className = `flex items-center justify-between rounded-xl p-3 mb-2 gap-4 border transition-colors ${
+      item.isValid
+        ? "bg-white border-gray-200 shadow-sm"
+        : "bg-red-50/70 border-red-200"
+    }`;
+
+    const fileNameContainer = document.createElement("div");
+    fileNameContainer.className = "flex flex-col min-w-0";
+
+    const topRow = document.createElement("div");
+    topRow.className = "flex items-center gap-2 min-w-0";
 
     const fileName = document.createElement("span");
     fileName.className =
-      "file-name font-medium text-gray-800 truncate max-w-[20rem]";
-    fileName.textContent = file.name;
+      "file-name font-medium text-gray-800 truncate max-w-[18rem]";
+    fileName.textContent = item.file.name;
+    fileName.title = item.file.name;
+
+    const fileSize = document.createElement("span");
+    fileSize.className = "text-xs text-gray-400 shrink-0 font-normal";
+    fileSize.textContent = `(${formatBytes(item.file.size)})`;
+
+    topRow.appendChild(fileName);
+    topRow.appendChild(fileSize);
+    fileNameContainer.appendChild(topRow);
+
+    if (!item.isValid) {
+      const errorMsg = document.createElement("p");
+      errorMsg.className =
+        "text-xs text-red-600 font-medium mt-1 leading-snug break-words max-w-[20rem]";
+      errorMsg.textContent = item.error || "Invalid file";
+      fileNameContainer.appendChild(errorMsg);
+    }
 
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
     removeBtn.className =
-      "remove-file text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-300 font-bold text-lg p-3 cursor-pointer";
-    removeBtn.dataset.fileIndex = index;
+      "remove-file text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-300 font-bold text-lg p-3 cursor-pointer shrink-0";
+    removeBtn.dataset.id = item.id;
     removeBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
     removeBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      removeFile(index);
+      uiState.selectedFilesManager.removeById(item.id);
+      displaySelectedFiles(uiState.selectedFilesManager.items);
+      displaySelectedFilesOverview();
+      uploadBtn.disabled = uiState.selectedFilesManager.isEmpty();
+
+      if (!uiState.selectedFilesManager.hasErrors) {
+        hideWarningBanner();
+      } else {
+        const reason =
+          uiState.selectedFilesManager.batchError ||
+          `${uiState.selectedFilesManager.invalidCount} file(s) have errors.`;
+        showWarningBanner(reason);
+        uploadBtn.disabled = true;
+      }
+
+      if (uiState.selectedFilesManager.isEmpty()) {
+        dialogClose(selectedFilesDialog);
+        hideSelectedFilesOverview();
+      }
     });
 
-    fileItem.appendChild(fileName);
+    fileItem.appendChild(fileNameContainer);
     fileItem.appendChild(removeBtn);
     selectedFilesDetails.appendChild(fileItem);
   });
+
+  if (uiState.selectedFilesManager.invalidCount > 0) {
+    clearInvalidBtn.classList.remove("hidden");
+  } else {
+    clearInvalidBtn.classList.add("hidden");
+  }
 }
 
 fileUploadInput?.addEventListener("change", () => {
   if (fileUploadInput.files && fileUploadInput.files.length > 0) {
-    uiState.selectedFiles = [
-      ...uiState.selectedFiles,
-      ...Array.from(fileUploadInput.files),
-    ];
-    displaySelectedFilesOverview(uiState.selectedFiles);
+    uiState.selectedFilesManager.addFiles(fileUploadInput.files);
+    displaySelectedFiles(uiState.selectedFilesManager.items);
+    displaySelectedFilesOverview();
+
+    if (uiState.selectedFilesManager.hasErrors) {
+      const reason =
+        uiState.selectedFilesManager.batchError ||
+        `${uiState.selectedFilesManager.invalidCount} file(s) have errors.`;
+      showWarningBanner(reason);
+      updateBtn.disabled = true;
+    } else {
+      hideWarningBanner();
+    }
   }
 
-  uploadBtn.disabled = fileUploadInput.files.length === 0;
+  uploadBtn.disabled = uiState.selectedFilesManager.isEmpty();
+  fileUploadInput.value = "";
 });
 
 viewSelectedFilesBtn?.addEventListener("click", () => {
-  if (uiState.selectedFiles && uiState.selectedFiles.length > 0) {
-    displaySelectedFiles(uiState.selectedFiles);
+  if (!uiState.selectedFilesManager.isEmpty()) {
+    displaySelectedFiles(uiState.selectedFilesManager.items);
     dialogOpen(selectedFilesDialog);
   }
 });
 
+function showWarningBanner(reason) {
+  uploadWarningBanner.classList.remove("hidden");
+  uploadWarningBanner.textContent = `${reason} Click 'View selected files' below to review.`;
+}
+
+function hideWarningBanner() {
+  uploadWarningBanner.classList.add("hidden");
+}
+
 async function handleUploadFile(e) {
   e.preventDefault();
-  if (uiState.selectedFiles.length === 0) return;
+  if (uiState.selectedFilesManager.isEmpty()) return;
+
+  if (uiState.selectedFilesManager.hasErrors) {
+    const reason =
+      uiState.selectedFilesManager.batchError ||
+      `${uiState.selectedFilesManager.invalidCount} file(s) have errors.`;
+    showWarningBanner(reason);
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = "Upload";
+    return;
+  } else {
+    hideWarningBanner();
+  }
 
   uploadBtn.disabled = true;
   uploadBtn.textContent = "Uploading...";
 
-  const formData = new FormData();
-  uiState.selectedFiles.forEach((file) => formData.append("files", file));
-
+  const formData = uiState.selectedFilesManager.toFormData();
   const currentDirectoryId = currentDirectory?.id || user.rootDirectoryId;
-
   formData.set("directoryId", currentDirectoryId);
 
   try {
@@ -160,9 +220,9 @@ async function handleUploadFile(e) {
       if (
         stored.length === 0 &&
         failed.length === 0 &&
-        uiState.selectedFiles.length > 0
+        !uiState.selectedFilesManager.isEmpty()
       ) {
-        failed = uiState.selectedFiles.map((file) => ({
+        failed = uiState.selectedFilesManager.allFiles.map((file) => ({
           originalName: file.name,
           reason: "Upload rejected",
         }));
@@ -174,10 +234,12 @@ async function handleUploadFile(e) {
 
     if (!response.ok) {
       const errorMsg =
-        data?.error?.[0]?.msg || "Failed to upload files. Please try again.";
+        data?.error?.[0]?.msg ||
+        data?.msg ||
+        "Failed to upload files. Please try again.";
       handleUploadResult({
         stored: [],
-        failed: uiState.selectedFiles.map((file) => ({
+        failed: uiState.selectedFilesManager.allFiles.map((file) => ({
           originalName: file.name,
           reason: "Upload failed.",
         })),
@@ -190,22 +252,24 @@ async function handleUploadFile(e) {
   } catch (error) {
     handleUploadResult({
       stored: [],
-      failed: uiState.selectedFiles.map((file) => ({
+      failed: uiState.selectedFilesManager.allFiles.map((file) => ({
         originalName: file.name,
         reason: error.message || "Network error. Please try again.",
       })),
     });
   } finally {
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = "Upload";
     dialogClose(fileUploadDialog);
   }
 }
 
 function resetFileUpload() {
-  uiState.selectedFiles = [];
-  displaySelectedFilesOverview(uiState.selectedFiles);
-  displaySelectedFiles(uiState.selectedFiles);
+  uiState.selectedFilesManager.clear();
+  hideSelectedFilesOverview();
   fileUploadInput.value = "";
   uploadBtn.disabled = true;
+  hideWarningBanner();
   fileList.classList.add("hidden");
 }
 
@@ -226,4 +290,31 @@ uploadForm?.addEventListener("submit", handleUploadFile);
 
 fileUploadDialog?.addEventListener("close", () => {
   resetFileUpload();
+});
+
+clearInvalidBtn?.addEventListener("click", () => {
+  uiState.selectedFilesManager.removeInvalid();
+  hideWarningBanner();
+
+  if (uiState.selectedFilesManager.isEmpty()) {
+    dialogClose(selectedFilesDialog);
+    hideSelectedFilesOverview();
+    uploadBtn.disabled = true;
+  } else {
+    displaySelectedFiles(uiState.selectedFilesManager.items);
+    displaySelectedFilesOverview();
+  }
+});
+
+selectedFilesDialog?.addEventListener("close", () => {
+  if (uiState.selectedFilesManager.hasErrors) {
+    const reason =
+      uiState.selectedFilesManager.batchError ||
+      `${uiState.selectedFilesManager.invalidCount} file(s) have errors.`;
+    showWarningBanner(reason);
+    uploadBtn.disabled = true;
+  } else {
+    hideWarningBanner();
+    uploadBtn.disabled = false;
+  }
 });
