@@ -60,4 +60,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Included new icons for Drive Box Application (manifest.json, favicons)
+- Included new icons for Drive Box Application (site.webmanifest, favicons)
