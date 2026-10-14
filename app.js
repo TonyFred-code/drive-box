@@ -40,7 +40,7 @@ app.set("trust proxy", 1);
 app.use(
   session({
     store: new PrismaSessionStore(prisma, {
-      checkPeriod: 2 * 60 * 1000, // Clear expired sessions every 2 minutes
+      checkPeriod: 12 * 60 * 60 * 1000, // Clear expired sessions every 12 hours
       dbRecordIdFunction: undefined,
       dbRecordIdIsSessionId: true,
     }),

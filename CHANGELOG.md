@@ -55,3 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Included client-side validation for file upload
+
+## [1.5.0] - 2026-10-14
+
+### Added
+
+- Included new icons for Drive Box Application (site.webmanifest, favicons)
